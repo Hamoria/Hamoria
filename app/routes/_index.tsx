@@ -13,7 +13,20 @@ export const meta: MetaFunction = () => {
 
 export const loader = ({ request }: Route.LoaderArgs) => {
   const timezoneDate = convertDateToUserTz(new Date(), request)
-  throw redirect('/login')
+
+  // const userId = await requireUserId(request)
+  const user = 'user'
+  if (!user) {
+    const requestUrl = new URL(request.url)
+    const loginParams = new URLSearchParams([
+      ['redirectTo', `${requestUrl.pathname}${requestUrl.search}`],
+    ])
+    const redirectTo = `/login?${loginParams}`
+    // await logout({ request, redirectTo })
+    return redirect(redirectTo)
+  }
+
+  throw redirect('/')
   return {
     timezoneDate: timezoneDate.toTimeString(),
   }

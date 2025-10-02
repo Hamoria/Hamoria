@@ -23,7 +23,7 @@ export async function action({ request }: ActionFunctionArgs) {
   //   session.set('userId', user.id)
   //   session.set('role', user.role)
 
-  return redirect('/', {
+  return redirect('/home', {
     headers: { 'set-cookie': await commitSession(session) },
   })
 }
