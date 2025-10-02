@@ -441,5 +441,80 @@ export const textAreaCtrl = [
 import type { SidebarData } from '../components/layout/types'
 
 export const sidebarData: SidebarData = {
-  navGroups: [{ title: 'Menu', items: links }],
+  user: {
+    name: 'Mizoguchi Coji',
+    email: 'coji@techtalk.jp',
+    avatar: '/avatars/shadcn.jpg',
+  },
+  teams: [
+    {
+      name: 'Shadcn Admin',
+      logo: FaPlus,
+      plan: 'React Router + ShadcnUI',
+    },
+  ],
+  navGroups: [
+    {
+      title: 'General',
+      items: [
+        {
+          title: 'Dashboard',
+          url: '/',
+          icon: FaPlus,
+        },
+      ],
+    },
+    {
+      title: 'Pages',
+      items: [
+        {
+          title: 'Auth',
+          icon: FaPlus,
+          items: [
+            {
+              title: 'Sign In',
+              url: '/sign-in',
+            },
+          ],
+        },
+        {
+          title: 'Errors',
+          icon: FaPlus,
+          items: [
+            {
+              title: 'Unauthorized',
+              url: '/401',
+              icon: FaPlus,
+            },
+            {
+              title: 'Forbidden',
+              url: '/403',
+              icon: FaPlus,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Other',
+      items: [
+        {
+          title: 'Settings',
+          icon: FaPlus,
+          items: [
+            {
+              title: 'Profile',
+              url: '/settings',
+              icon: FaPlus,
+            },
+          ],
+        },
+        {
+          title: 'Help Center',
+          url: '/help-center',
+          icon: FaPlus,
+        },
+      ],
+    },
+  ],
 }
