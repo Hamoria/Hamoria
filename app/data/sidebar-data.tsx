@@ -98,20 +98,20 @@ import { FaTags } from 'react-icons/fa'
 export const courseConfigLinks = [
   {
     // id: nanoid(),
-    path: 'course-headers',
-    text: 'course headers',
+    title: 'course-headers',
+    url: 'course-headers',
     icon: LuPanelTop,
   },
   {
     // id: nanoid(),
-    path: 'all-examples',
-    text: 'examples',
+    title: 'all-examples',
+    url: 'examples',
     icon: TbHexagonalPrismPlus,
   },
   {
     // id: nanoid(),
-    path: 'tags',
-    text: 'tags',
+    title: 'tags',
+    url: 'tags',
     icon: FaTags,
   },
 ]
@@ -119,32 +119,32 @@ export const courseConfigLinks = [
 export const whatlinks = [
   {
     // id: nanoid()
-    path: '.',
-    text: 'home',
+    title: 'home',
+    url: 'home',
     icon: TbHome,
   },
   {
     // id: nanoid()
-    path: 'all-signs',
-    text: 'signs',
+    title: 'all-signs',
+    url: 'signs',
     icon: FaHands,
   },
   {
     // id: nanoid()
-    path: 'cart',
-    text: 'cart',
+    title: 'cart',
+    url: 'cart',
     icon: PiHandbagBold,
   },
   {
     //   id: nanoid()
-    path: 'checkout',
-    text: 'checkout',
+    title: 'checkout',
+    url: 'checkout',
     icon: FaHandsHoldingCircle,
   },
   {
     // id: nanoid()
-    path: 'orders',
-    text: 'orders',
+    title: 'orders',
+    url: 'orders',
     icon: FaHandshakeSimple,
   },
 ]
@@ -240,24 +240,24 @@ export const curriculumLinks = [
   {
     // id: nanoid(),
     // fragmentId: nanoid(),
-    path: 'no',
-    text: 'no',
+    title: 'no',
+    url: 'no',
     icon: GiMaterialsScience,
     activeIcon: LuBoxes,
   },
   {
     // id: nanoid(),
     // fragmentId: nanoid(),
-    path: 'so',
-    text: 'so',
+    title: 'so',
+    url: 'so',
     icon: GiHumanPyramid,
     activeIcon: LuPersonStanding,
   },
   {
     // id: nanoid(),
     // fragmentId: nanoid(),
-    path: 'story',
-    text: 'story',
+    title: 'story',
+    url: 'story',
     icon: GiHumanPyramid,
     activeIcon: LuPersonStanding,
   },
@@ -266,32 +266,32 @@ export const curriculumLinks = [
 export const noLinks = [
   {
     // id: nanoid()
-    path: 'crud',
-    text: 'crud',
+    title: 'crud',
+    url: 'courses/crud',
     icon: LuBox,
   },
   {
     // id: nanoid()
-    path: 'domain',
-    text: 'domain',
+    title: 'domain',
+    url: 'courses/domain',
     icon: FaSitemap,
   },
   {
     // id: nanoid()
-    path: 'tuple',
-    text: 'tuple',
+    title: 'tuple',
+    url: 'courses/tuple',
     icon: GiMisdirection,
   },
   {
     // id: nanoid()
-    path: 'place',
-    text: 'place',
+    title: 'place',
+    url: 'courses/place',
     icon: LuReplaceAll,
   },
   {
     // id: nanoid()
-    path: 'item',
-    text: 'item',
+    title: 'item',
+    url: 'courses/item',
     icon: GiFamilyTree,
   },
 ]
@@ -299,48 +299,48 @@ export const noLinks = [
 export const soLinks = [
   {
     // id: nanoid()
-    path: 'shock',
-    text: 'shock',
+    title: 'shock',
+    url: 'courses/shock',
     icon: ImShocked,
   },
   {
     // id: nanoid()
-    path: 'denial',
-    text: 'denial',
+    title: 'denial',
+    url: 'courses/denial',
     icon: TfiHandStop,
   },
 
   {
     // id: nanoid()
-    path: 'anger',
-    text: 'anger',
+    title: 'anger',
+    url: 'courses/anger',
     icon: GiEvilMinion,
   },
 
   {
     // id: nanoid()
-    path: 'bargain',
-    text: 'bargain',
+    title: 'bargain',
+    url: 'courses/bargain',
     icon: TbMoneybag,
   },
 
   {
     // id: nanoid(),
-    path: 'depression',
-    text: 'depression',
+    title: 'depression',
+    url: 'courses/depression',
     icon: SiCodeproject,
   },
 
   {
     // id: nanoid(),
-    path: 'testing',
-    text: 'testing',
+    title: 'testing',
+    url: 'courses/testing',
     icon: SiTestinglibrary,
   },
   {
     // id: nanoid(),
-    path: 'acceptance',
-    text: 'acceptance',
+    title: 'acceptance',
+    url: 'courses/acceptance',
     icon: MdSwitchAccessShortcut,
   },
 ]
@@ -350,32 +350,32 @@ import { GiFallingStar, GiJusticeStar, GiStarFlag } from 'react-icons/gi'
 export const storyLinks = [
   {
     // id: nanoid(),
-    path: 'exposition',
-    text: 'exposition',
+    title: 'exposition',
+    url: 'exposition',
     icon: GiStarFlag,
   },
   {
     // id: nanoid(),
-    path: 'rising',
-    text: 'rising',
+    title: 'rising',
+    url: 'courses/rising',
     icon: PiShootingStarFill,
   },
   {
     // id: nanoid()
-    path: 'climax',
-    text: 'climax',
+    title: 'climax',
+    url: 'courses/climax',
     icon: GiJusticeStar,
   },
   {
     // id: nanoid()
-    path: 'falling',
-    text: 'falling',
+    title: 'falling',
+    url: 'courses/falling',
     icon: GiFallingStar,
   },
   {
     // id: nanoid(),
-    path: 'denouement',
-    text: 'denouement',
+    title: 'denouement',
+    url: 'courses/denouement',
     icon: GiStarFlag,
   },
 ]
@@ -439,6 +439,7 @@ export const textAreaCtrl = [
 ]
 
 import type { SidebarData } from '../components/layout/types'
+import { title } from 'process'
 
 export const sidebarData: SidebarData = {
   user: {
@@ -456,62 +457,45 @@ export const sidebarData: SidebarData = {
   navGroups: [
     {
       title: 'General',
+      items: whatlinks,
+    },
+    {
+      title: 'curriculum',
       items: [
         {
-          title: 'Dashboard',
-          url: '/',
+          title: 'No',
           icon: FaPlus,
+          items: noLinks,
+        },
+        {
+          title: 'So',
+          icon: FaPlus,
+          items: soLinks,
+        },
+        {
+          title: 'So',
+          icon: FaPlus,
+          items: storyLinks,
         },
       ],
     },
     {
-      title: 'Pages',
+      title: 'configure',
       items: [
         {
-          title: 'Auth',
+          title: 'handparts',
           icon: FaPlus,
           items: [
             {
-              title: 'Sign In',
-              url: '/sign-in',
-            },
-          ],
-        },
-        {
-          title: 'Errors',
-          icon: FaPlus,
-          items: [
-            {
-              title: 'Unauthorized',
-              url: '/401',
-              icon: FaPlus,
-            },
-            {
-              title: 'Forbidden',
-              url: '/403',
-              icon: FaPlus,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      title: 'Other',
-      items: [
-        {
-          title: 'Settings',
-          icon: FaPlus,
-          items: [
-            {
-              title: 'Profile',
+              title: 'settings',
               url: '/settings',
               icon: FaPlus,
             },
           ],
         },
         {
-          title: 'Help Center',
-          url: '/help-center',
+          title: 'controlls',
+          items: courseConfigLinks,
           icon: FaPlus,
         },
       ],
