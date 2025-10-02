@@ -26,15 +26,15 @@ export default function LoginLayout() {
     <div className='relative z-10 flex min-h-screen w-full items-start justify-center overflow-hidden md:items-center'>
       <div className='relative z-10 flex h-screen w-full flex-col-reverse bg-white drop-shadow-2xl md:h-[75vh] md:w-11/12 md:flex-row lg:w-2/3'>
         <AuthFooter />
-      </div>
 
-      <div
-        className={cn(
-          'z-10 w-full p-8 transition-transform md:w-1/2 lg:p-0',
-          isRegisterPage && 'md:-translate-x-full',
-          isForgotPasswordPage && '-translate-x-1/2'
-        )}>
-        <Outlet />
+        <div
+          className={cn(
+            'z-10 w-full p-8 transition-transform md:w-1/2 lg:p-0',
+            isRegisterPage && 'md:-translate-x-full',
+            isForgotPasswordPage && '-translate-x-1/2'
+          )}>
+          <Outlet />
+        </div>
       </div>
     </div>
   )

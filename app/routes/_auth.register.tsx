@@ -30,24 +30,29 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Component() {
   return (
-    <Form method='post'>
-      <label id='email'>Email</label>
-      <input
-        id='email'
-        type='email'
-        name='email'
-        required
-      />
+    <Form
+      // onSubmit={handleSubmit}
+      className='mx-auto flex h-full w-full items-center justify-center'
+      method='post'>
+      <div className='mx-auto flex h-full w-full flex-col items-center justify-center gap-4 lg:w-2/3'>
+        <label id='email'>Email</label>
+        <input
+          id='email'
+          type='email'
+          name='email'
+          required
+        />
 
-      <label id='password'>Password</label>
-      <input
-        id='password'
-        type='password'
-        name='password'
-        required
-      />
+        <label id='password'>Password</label>
+        <input
+          id='password'
+          type='password'
+          name='password'
+          required
+        />
 
-      <button>Register</button>
+        <button>Register</button>
+      </div>
     </Form>
   )
 }
