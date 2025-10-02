@@ -1,0 +1,6 @@
+/* styles/reset.css */
+@import '@acab/reset.css' layer(reset);
+
+@layer reset {
+  /* custom reset styles */
+}
