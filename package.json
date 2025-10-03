@@ -28,6 +28,7 @@
 	},
 	"dependencies": {
 		"@acab/reset.css": "0.11.0",
+		"@edgefirst-dev/api-client": "0.3.0",
 		"@epic-web/client-hints": "1.3.8",
 		"@forge42/seo-tools": "1.4.5",
 		"@radix-ui/react-avatar": "1.1.10",

@@ -1,5 +1,5 @@
 import { Form, Outlet, redirect, useNavigation, useSubmit } from 'react-router'
-import type { Route } from '../+types/root'
+import type { Route } from './+types/_dashboard._courses'
 // import { getAllTodos, getUser, type TodoRecord } from '~/db'
 import Content from '~/components/Content'
 import React, { useEffect, useRef } from 'react'
@@ -27,7 +27,6 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     return null
   }
 }
-
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const data = loaderData as unknown as Data | undefined
   // const { isAuthenticated, handleAuth } = useAuth()
@@ -128,6 +127,11 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             )} */}
           </div>
         }
+        <Form
+          method='post'
+          action='/actions/ping'>
+          <button type='submit'>Ping API and Redirect</button>
+        </Form>
         <Content>
           {navigation.state === 'loading' ? (
             <div className='loader'></div>
