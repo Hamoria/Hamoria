@@ -2,7 +2,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 
 import browserslist from 'browserslist'
-import { browserslistToTargets } from 'lightningcss'
+import { browserslistToTargets, Features } from 'lightningcss'
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
