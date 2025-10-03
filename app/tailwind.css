@@ -136,3 +136,17 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@utility border-scaffold {
+  border: var(--border-width) var(--border-style) var(--border-color);
+  border-radius: var(--radius);
+}
+
+.card {
+  @apply border-scaffold;
+}
+/* 
+.card {
+  background: var(--color-pink-500);
+  color: var(--color-pink-900);
+} */
