@@ -513,7 +513,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
 }
 ```
 
-#####
+##### search
 
 \_dashboard.\_courses.tsx
 
@@ -755,20 +755,164 @@ export function ProfileDropdown() {
 }
 ```
 
-theme-switch.tsx
+#### content in 2 layers
 
-```tsx
-
-```
+##### goal
 
 TodoList.tsx
 
 ```tsx
+import { NavLink } from 'react-router'
+// import type { TodoRecord } from '~/db'
+import { formatDate } from '~/utils/utils'
 
+export default function TodoList({
+  todos,
+  search,
+}: {
+  todos?: any[]
+  search?: React.RefObject<HTMLInputElement>
+}) {
+  const list =
+    search?.current?.value &&
+    (todos?.filter(
+      (todo) =>
+        todo.createdAt.includes(search?.current?.value) ||
+        todo.updatedAt?.includes(search?.current?.value)
+    ) as any[])
+  const filteredListAfterUpdate =
+    list && (list?.filter((todo) => !todo.updatedAt) as any[])
+  const displayList =
+    list && search?.current?.value
+      ? filteredListAfterUpdate!.length < list.length
+        ? filteredListAfterUpdate
+        : list
+      : (todos as any[])
+  return (
+    <div
+      className={`todos pt-8 max-w-lg flex flex-col gap-2 ${
+        search?.current?.value ? 'block' : 'hidden md:block'
+      }`}>
+      {displayList &&
+        displayList.length > 0 &&
+        displayList?.map((todo: any) => {
+          //if updated show latest year in the url
+          const year =
+            Number(new Date(todo.updatedAt!).getFullYear()) >
+            Number(new Date(todo.createdAt).getFullYear())
+              ? new Date(todo.updatedAt!).getFullYear().toString()
+              : new Date(todo.createdAt).getFullYear().toString()
+          return (
+            <NavLink
+              to={`/todo/${year}/${todo.id}`}
+              viewTransition
+              className={({ isActive }) =>
+                `${
+                  isActive ? 'dark:bg-blue bg-blue/50 pointer-events-none' : ''
+                } block p-2 rounded w-fit`
+              }
+              key={todo.id}>
+              {todo.updatedAt
+                ? formatDate(todo.updatedAt)
+                : formatDate(todo.createdAt!)}
+            </NavLink>
+          )
+        })}
+    </div>
+  )
+}
 ```
 
 dashboard.\_courses/home.tsx
 
 ```tsx
+export async function action() {
+  return null
+}
+```
 
+#####
+
+\_dashboard_courses.tsx
+
+```tsx
+import type { Route } from './+types/_dashboard._courses'
+;<Form
+  method='post'
+  action='/actions/ping'>
+  <button type='submit'>Ping API and Redirect</button>
+</Form>
+```
+
+clients\server\api.ts
+
+```ts
+import { APIClient as BaseClient } from '@edgefirst-dev/api-client'
+import { z } from 'zod'
+// import * as Contact from '~/entities/contact'
+
+export const Schema = z.object({
+  id: z.number(),
+})
+export class APIClient extends BaseClient {
+  constructor(protected accessToken: string) {
+    super(new URL(process.env.RESOURCE_HOST || 'http://localhost:5100/api'))
+  }
+
+  //   override async before(request: Request) {
+  //     request.headers.set('Authorization', `Bearer ${this.accessToken}`)
+  //     return request
+  //   }
+
+  override async after(_: Request, response: Response) {
+    if (response.ok) return response
+    let data = await response.json()
+    let { error } = z.object({ error: z.string() }).parse(data)
+    throw new Error(error)
+  }
+
+  async ping(query?: string) {
+    let response = query
+      ? await this.get(`/docs?q=${encodeURIComponent(query.trim())}`)
+      : await this.get('/docs')
+    let data = await response.json()
+    return z.object({ contacts: data }) // z.array(Contact.Schema) }).parse(data).contacts
+  }
+}
+```
+
+contexts\server-aci
+
+```ts
+import { createContext } from 'react-router'
+import type { APIClient } from '~/clients/server-api'
+
+export const apiContext = createContext<APIClient>()
+```
+
+entries\ping.ts
+
+```ts
+import { z } from 'zod'
+
+export const Schema = z.object({
+  id: z.number(),
+})
+export type Type = z.infer<typeof Schema>
+// export type InputType = z.infer<typeof InputSchema>
+```
+
+routes\actions\ping.ts
+
+```ts
+import { getAPIClient } from '~/middlewares/api-client'
+import { redirect } from 'react-router'
+import type { Route } from '../+types/_dashboard._courses'
+export async function action({ request, context }: Route.ActionArgs) {
+  let api = getAPIClient(context as unknown as any)
+  let formData = await request.formData()
+  // let input = Contact.InputSchema.parse(Object.fromEntries(formData))
+  let contact = await api.ping()
+  return redirect('/home')
+}
 ```

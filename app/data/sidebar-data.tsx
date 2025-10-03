@@ -473,17 +473,17 @@ export const sidebarData: SidebarData = {
           items: soLinks,
         },
         {
-          title: 'So',
+          title: 'Story',
           icon: FaPlus,
           items: storyLinks,
         },
       ],
     },
     {
-      title: 'configure',
+      title: 'configure-parts',
       items: [
         {
-          title: 'handparts',
+          title: 'handparts-list',
           icon: FaPlus,
           items: [
             {

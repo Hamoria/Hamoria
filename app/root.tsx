@@ -23,6 +23,10 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   return { lang, clientEnv, hints }
 }
 
+export async function action() {
+  return null
+}
+
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: tailwindcss },
   { rel: 'stylesheet', href: tailwindResetcss },
