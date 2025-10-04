@@ -831,7 +831,7 @@ export async function action() {
 }
 ```
 
-#####
+##### test perform action
 
 \_dashboard_courses.tsx
 
@@ -914,5 +914,386 @@ export async function action({ request, context }: Route.ActionArgs) {
   // let input = Contact.InputSchema.parse(Object.fromEntries(formData))
   let contact = await api.ping()
   return redirect('/home')
+}
+```
+
+LOADER root triggered - 1.12ms
+ERROR routes/actions/ping threw an error!
+ERROR No value found for context
+Error: No value found for context
+at RouterContextProvider.get (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:397:11)
+at getAPIClient (/home/fallow/base-stack/app/middlewares/
+
+#### end iteration
+
+##### build environment
+
+auth.server.ts
+
+- hmm how to instanciate
+
+```ts
+import { OAuth2Strategy } from 'remix-auth-oauth2'
+
+export type Tokens = OAuth2Strategy.VerifyOptions['tokens']
+
+export default await OAuth2Strategy.discover<Tokens>(
+  new URL('/.well-known/oauth-authorization-server', process.env.ISSUER_HOST),
+  {
+    clientId: process.env.CLIENT_ID!,
+    clientSecret: process.env.CLIENT_SECRET!,
+    redirectURI: 'http://localhost:3000/auth',
+    scopes: ['openid', 'contacts:read:own', 'contacts:write:own'],
+    audience: process.env.AUDIENCE,
+  },
+  async ({ tokens }) => tokens
+)
+// export async function createOAuth2Strategy() {
+//   return OAuth2Strategy.discover<Tokens>(
+//     new URL('/.well-known/oauth-authorization-server', process.env.ISSUER_HOST),
+//     {
+//       clientId: process.env.CLIENT_ID!,
+//       clientSecret: process.env.CLIENT_SECRET!,
+//       redirectURI: 'http://localhost:3000/auth',
+//       scopes: ['openid', 'contacts:read:own', 'contacts:write:own'],
+//       audience: process.env.AUDIENCE,
+//     },
+//     async ({ tokens }) => tokens
+//   )
+// }
+```
+
+app.config.server.ts
+
+- get envrionments of diff microservices
+
+```ts
+import { Environment } from '../../models'
+
+// import { getRequiredServerEnvVar } from './utils.server'
+
+export const environment = getRequiredServerEnvVar<Environment>('NODE_ENV')
+export const sessionSecret = getRequiredServerEnvVar(
+  'SESSION_SECRET',
+  'MY_SECRET_KEY'
+)
+export const stripePublishableKey = getRequiredServerEnvVar(
+  'STRIPE_PUBLISHABLE_KEY'
+)
+export const authAPIUrl = getRequiredServerEnvVar(
+  'AUTH_API_URL',
+  'http://localhost:8081'
+)
+export const orderAPIUrl = getRequiredServerEnvVar(
+  'ORDER_API_URL',
+  'http://localhost:8082'
+)
+export const productAPIUrl = getRequiredServerEnvVar(
+  'PRODUCT_API_URL',
+  'http://localhost:8083'
+)
+
+function getRequiredEnvVarFromObj<T>(
+  obj: Record<string, string | undefined>,
+  key: string,
+  devValue: unknown = `${key}-dev-value`
+) {
+  let value = devValue
+  const envVal = obj[key]
+  if (envVal) {
+    value = envVal
+  } else if (obj.ENVIRONMENT !== Environment.Development) {
+    throw new Error(`${key} is a required env variable`)
+  }
+  return value as T
+}
+
+export function getRequiredServerEnvVar<T = string>(
+  key: string,
+  devValue?: unknown
+) {
+  return getRequiredEnvVarFromObj<T>(process.env, key, devValue)
+}
+```
+
+security.server.ts
+
+- content security
+
+```ts
+import { Environment } from '../../models'
+
+import clsx, { ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export const replaceNewLinesWithSpaces = (str: string) => {
+  return str.replace(/\s{2,}/g, ' ').trim()
+}
+
+export const classnames = (...inputs: ClassValue[]) => {
+  return twMerge(replaceNewLinesWithSpaces(clsx(inputs)))
+}
+
+import { environment } from './app.config.server'
+
+const localDomains =
+  environment === Environment.Development
+    ? '127.0.0.1:* localhost:* ws://localhost:*'
+    : ''
+const appDomains = 'https://*.projectx.com'
+const trustedDomains = [appDomains, localDomains].filter(Boolean).join(' ')
+
+export const defaultSrc = replaceNewLinesWithSpaces(`
+  ${trustedDomains}
+  https://*.stripe.com
+`)
+
+export const scriptSrc = replaceNewLinesWithSpaces(`
+  ${defaultSrc}
+  
+`)
+
+export const frameSrc = replaceNewLinesWithSpaces(`
+  ${defaultSrc}
+`)
+
+export const connectSrc = replaceNewLinesWithSpaces(`
+  ${defaultSrc}
+`)
+export const mediaSrc = replaceNewLinesWithSpaces(`
+  ${defaultSrc}
+`)
+
+export const imgSrc = replaceNewLinesWithSpaces(`
+  ${defaultSrc}
+  https://*.unsplash.com
+  https://placehold.co
+  https://gravatar.com
+  https://*.githubusercontent.com\
+  https://tailwindui.com
+`)
+
+export const contentSecurityPolicy = replaceNewLinesWithSpaces(`
+  default-src 'self' data: blob: ${defaultSrc};
+  script-src 'self' 'unsafe-inline' data: blob: ${scriptSrc};
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://rsms.me;
+  object-src 'none';
+  base-uri 'self';
+  connect-src 'self' ${connectSrc};
+  font-src 'self' data: https://rsms.me https://fonts.gstatic.com;
+  frame-src 'self' ${frameSrc};
+  img-src 'self' data: blob: ${imgSrc};
+  manifest-src 'self';
+  media-src 'self' blob: ${mediaSrc};
+  worker-src 'self' blob:;
+  form-action 'self';
+`)
+
+export const securityHeaders: Record<string, string> = {
+  // X-DNS-Prefetch-Control
+  'X-DNS-Prefetch-Control': 'on',
+  // Strict-Transport-Security
+  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
+  // X-XSS-Protection
+  'X-XSS-Protection': '1; mode=block',
+  // X-Frame-Options
+  'X-Frame-Options': 'SAMEORIGIN',
+  // X-Content-Type-Options
+  'X-Content-Type-Options': 'nosniff',
+  // Referrer-Policy
+  'Referrer-Policy': 'origin-when-cross-origin',
+  // Content Security Policy
+  'Content-Security-Policy': contentSecurityPolicy,
+}
+```
+
+env.server.ts
+
+```ts
+const envSchema = z.object({
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'])
+    .default('development'),
+  APP_ENV: z
+    .enum(['development', 'staging', 'production'])
+    .default('development'),
+
+  ISSUER: z.string(),
+  CLIENT_ID: z.string(),
+  CLIENT_SECRET: z.string(),
+  SESSION_SECRET: z.string(),
+
+  RESOURCE_HOST: z.string().url(),
+  ISSUER_HOST: z.string().url(),
+  AUDIENCE: z.string(),
+  APP_DEPLOYMENT_ENV: z
+    .enum(['development', 'staging', 'production'])
+    .default('staging'),
+})
+```
+
+test router ctx provider
+
+```ts
+import { test, expect, vi } from 'vitest'
+import { getSession } from './session'
+import { refreshMiddleware } from './refresh'
+import { RouterContextProvider } from 'react-router'
+
+test('returns a response', async () => {
+  let request = new Request('https://example.com')
+  let params = {}
+  let context = new RouterContextProvider()
+
+  let next = vi.fn().mockResolvedValue(new Response(null))
+
+  let response = await refreshMiddleware({ request, params, context }, next)
+
+  expect(response).toBeInstanceOf(Response)
+  let session = getSession(context as unknown as any)
+
+  expect(session).toBeDefined()
+  // Your `isSession` function can be checked here as well
+})
+test('calls the next function', async () => {
+  let request = new Request('https://example.com')
+  let params = {}
+  let context = new RouterContextProvider()
+
+  // Replace Bun's mock with Vitest's `vi.fn()`
+  let next = vi.fn().mockImplementation(() => new Response(null))
+
+  let response = await refreshMiddleware({ request, params, context }, next)
+
+  expect(next).toHaveBeenCalledTimes(1)
+})
+
+// test('commits the session in the response headers', async () => {
+//   let request = new Request('https://example.com')
+//   let params = {}
+//   let context = new RouterContextProvider()
+
+//   let next = vi.fn().mockImplementation(() => new Response(null))
+
+//   let response = await refreshMiddleware({ request, params, context }, next)
+
+//   // Expect a set-cookie header string to be present
+//   expect(response.headers.get('Set-Cookie')).toBeTypeOf('string')
+// })
+```
+
+##### some requirements difficult to resolve
+
+api-client.ts
+
+- the client need access token
+
+```ts
+let accessToken = getAccessToken(context as RouterContextProvider)
+context.set(apiContext, new APIClient(accessToken))
+```
+
+refresh.ts
+
+- unset and has refresh
+
+```ts
+import type { MiddlewareFunction } from 'react-router'
+import {
+  href,
+  redirect,
+  createContext,
+  RouterContextProvider,
+} from 'react-router'
+import auth, { type Tokens } from '~/auth'
+import { getSession } from './session'
+
+const accessTokenContext = createContext<string>()
+
+export const refreshMiddleware: MiddlewareFunction<Response> = async (
+  { context },
+  next
+) => {
+  //   const auth = await createOAuth2Strategy()
+  // @ts-expect-error
+  let session = await getSession(context)
+
+  let refreshToken = session.get('refresh')
+
+  if (!refreshToken) throw redirect('/_auth/login')
+
+  let tokens: Tokens | null = null
+
+  try {
+    tokens = await auth.refreshToken(refreshToken)
+  } catch {
+    // If the refresh token is invalid, we need to redirect to the login page
+    // to get a new one.
+    session.unset('refresh')
+    session.unset('email')
+    throw redirect('/_auth/login')
+  }
+
+  if (tokens.hasRefreshToken()) {
+    session.set('refresh', tokens.refreshToken())
+  }
+
+  context.set(accessTokenContext, tokens.accessToken())
+
+  return await next()
+}
+
+export function getAccessToken(context: RouterContextProvider) {
+  return context.get(accessTokenContext)
+}
+```
+
+session.ts
+
+```ts
+type SessionData = {
+  userId: string
+  role: 'user' | 'admin'
+  refresh?: string
+  email?: string
+}
+```
+
+root.tsx
+
+```ts
+import { apiClientMiddleware, getAPIClient } from '~/middlewares/api-client'
+import { refreshMiddleware } from '~/middlewares/refresh'
+export const middleware = [
+  refreshMiddleware,
+  apiClientMiddleware,
+] satisfies Route.MiddlewareFunction[]
+```
+
+$.tsx
+
+```ts
+export async function loader() {
+  return null
+}
+```
+
+\_index.tsx
+
+```ts
+throw redirect('/home')
+```
+
+actions\ping.ts
+
+```ts
+import { apiClientMiddleware } from '~/middlewares/api-client'
+export const middleware = [
+  // refreshMiddleware,
+  apiClientMiddleware,
+] satisfies Route.MiddlewareFunction[]
+
+export async function loader({ context }: Route.LoaderArgs) {
+  return null
 }
 ```

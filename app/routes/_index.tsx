@@ -26,7 +26,7 @@ export const loader = ({ request }: Route.LoaderArgs) => {
     return redirect(redirectTo)
   }
 
-  throw redirect('/')
+  throw redirect('/home')
   return {
     timezoneDate: timezoneDate.toTimeString(),
   }

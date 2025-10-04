@@ -8,7 +8,8 @@ import type { Route } from '../+types/root'
 // import { getAllTodos, getUser, type TodoRecord } from '~/db'
 import Content from '~/components/Content'
 import React, { useEffect, useRef } from 'react'
-import TodoList from '~/components/TodosList'
+// import TodoList from '~/components/TodosList'
+import { CustomLink } from '~/components/Custom-link'
 import { getSession } from '~/middlewares/session'
 
 import { AppSidebar } from '~/components/layout/app-sidebar'
@@ -85,7 +86,7 @@ export default function DashboardLayout({ loaderData }: Route.ComponentProps) {
 
           <Main>
             <div>courses home</div>
-            Link to <Link to='../purshases'>acceptance</Link>
+            Link to <CustomLink to='../purshases'>acceptance</CustomLink>
             <Outlet />
           </Main>
         </div>
