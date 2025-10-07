@@ -2,11 +2,27 @@
 
 ##
 
-###
+[core-layout]
+https://github.com/Hamoria/Hamoria/blob/main/documentation/iteration1.md
+
+[pages]
+
+[content]
+
+### core layout
+
+- current
+
+https://github.com/coji/shadcn-admin-react-router/tree/main/app
+
+- future
+  [tuto v2] https://sergiodxa.com/tutorials/add-additional-data-before-submitting-on-remix
 
 #### base create record
 
 use process.env
+
+- auth with session that have useriD + admin
 
 button.ts
 
@@ -74,6 +90,8 @@ export { Button, buttonVariants }
 
 auth.tsx
 
+- cookie to find user.
+
 ```ts
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import { Form, redirect } from 'react-router'
@@ -138,7 +156,125 @@ export default function Component() {
 
 auth.login
 
+```ts
+import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
+import { Form, redirect } from 'react-router'
+import { getSession, commitSession } from '~/middlewares/session'
+
+// import { findUser } from "~/models/user.server"; // mock file
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  let session = await getSession(request.headers.get('cookie'))
+  // redirect to / if the user is logged-in
+  if (session.has('userId')) return redirect('/')
+  return null
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  let formData = await request.formData()
+
+  //   let user = await findUser({
+  //     email: formData.get('email'),
+  //     password: formData.get('password'),
+  //   })
+
+  let session = await getSession(request.headers.get('cookie'))
+  //   session.set('userId', user.id)
+  //   session.set('role', user.role)
+
+  return redirect('/', {
+    headers: { 'set-cookie': await commitSession(session) },
+  })
+}
+
+export default function Component() {
+  return (
+    <Form
+      method='post'
+      className='flex h-full items-center justify-center'>
+      <div className='mx-auto flex h-full w-full flex-col items-center justify-center gap-4 lg:w-2/3'>
+        <h1 className='mb-2 text-center text-6xl text-black lg:mb-4'>Login</h1>
+        <p className='text-center'>Login below</p>
+        <label id='email'>Email</label>
+        <input
+          id='email'
+          type='email'
+          name='email'
+          required
+        />
+
+        <label id='password'>Password</label>
+        <input
+          id='password'
+          type='password'
+          name='password'
+          required
+        />
+
+        <button>Log In</button>
+      </div>
+    </Form>
+  )
+}
+```
+
 auth.register
+
+```ts
+import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
+import { Form, redirect } from 'react-router'
+import { getSession, commitSession } from '~/middlewares/session'
+
+// mock file
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  let session = await getSession(request.headers.get('cookie'))
+  // redirect to / if the user is logged-in
+  if (session.has('userId')) return redirect('/')
+  return null
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  let formData = await request.formData()
+
+  // let user = await createUser({
+  //   email: formData.get('email'),
+  //   password: formData.get('password'), // createUser must encrypt the password
+  // })
+
+  let session = await getSession(request.headers.get('cookie'))
+  // session.set('userId', user.id)
+  // session.set('role', user.role)
+
+  return redirect('/', {
+    headers: { 'set-cookie': await commitSession(session) },
+  })
+}
+
+export default function Component() {
+  return (
+    <Form method='post'>
+      <label id='email'>Email</label>
+      <input
+        id='email'
+        type='email'
+        name='email'
+        required
+      />
+
+      <label id='password'>Password</label>
+      <input
+        id='password'
+        type='password'
+        name='password'
+        required
+      />
+
+      <button>Register</button>
+    </Form>
+  )
+}
+```
 
 session.ts
 
@@ -212,15 +348,241 @@ xport function AuthFooter() {
 
 #### dashboard dependencies
 
+[login-->layout-clientside]
+
 command-menu.tsx
+
+- scroll area and command., callback to run useNavigate || theme
+
+```tsx
+import {
+  IconArrowRightDashed,
+  IconDeviceLaptop,
+  IconMoon,
+  IconSun,
+} from '@tabler/icons-react'
+import { useTheme } from 'next-themes'
+import React from 'react'
+import { useNavigate } from 'react-router'
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '~/components/ui/command'
+import { useSearch } from '~/context/search-context'
+import { sidebarData } from '~/data/sidebar-data'
+import { ScrollArea } from './ui/scroll-area'
+
+export function CommandMenu() {
+  const navigate = useNavigate()
+  const { setTheme } = useTheme()
+  const { open, setOpen } = useSearch()
+
+  const runCommand = React.useCallback(
+    (command: () => unknown) => {
+      setOpen(false)
+      command()
+    },
+    [setOpen]
+  )
+
+  return (
+    <CommandDialog
+      modal
+      open={open}
+      onOpenChange={setOpen}>
+      <CommandInput placeholder='Type a command or search...' />
+      <CommandList>
+        <ScrollArea
+          type='hover'
+          className='h-72 pr-1'>
+          <CommandEmpty>No results found.</CommandEmpty>
+          {sidebarData.navGroups.map((group) => (
+            <CommandGroup
+              key={group.title}
+              heading={group.title}>
+              {group.items.map((navItem, i) => {
+                if (navItem.url)
+                  return (
+                    <CommandItem
+                      key={`${navItem.url}-${i}`}
+                      value={navItem.title}
+                      onSelect={() => {
+                        runCommand(() => navigate(navItem.url as string))
+                      }}>
+                      <div className='mr-2 flex h-4 w-4 items-center justify-center'>
+                        <IconArrowRightDashed className='text-muted-foreground/80 size-2' />
+                      </div>
+                      {navItem.title}
+                    </CommandItem>
+                  )
+
+                return navItem.items?.map((subItem, i) => (
+                  <CommandItem
+                    key={`${subItem.url}-${i}`}
+                    value={subItem.title}
+                    onSelect={() => {
+                      runCommand(() => navigate(subItem.url as string))
+                    }}>
+                    <div className='mr-2 flex h-4 w-4 items-center justify-center'>
+                      <IconArrowRightDashed className='text-muted-foreground/80 size-2' />
+                    </div>
+                    {subItem.title}
+                  </CommandItem>
+                ))
+              })}
+            </CommandGroup>
+          ))}
+          <CommandSeparator />
+          <CommandGroup heading='Theme'>
+            <CommandItem onSelect={() => runCommand(() => setTheme('light'))}>
+              <IconSun /> <span>Light</span>
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => setTheme('dark'))}>
+              <IconMoon className='scale-90' />
+              <span>Dark</span>
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => setTheme('system'))}>
+              <IconDeviceLaptop />
+              <span>System</span>
+            </CommandItem>
+          </CommandGroup>
+        </ScrollArea>
+      </CommandList>
+    </CommandDialog>
+  )
+}
+```
 
 layout/types
 
-searcj-context.tsx
+- navbased item, collapasble || navlink
+
+```ts
+interface User {
+  name: string
+  email: string
+  avatar: string
+}
+
+interface Team {
+  name: string
+  logo: React.ElementType
+  plan: string
+}
+
+interface BaseNavItem {
+  title: string
+  badge?: string
+  icon?: React.ElementType
+}
+
+type NavLink = BaseNavItem & {
+  url: string
+  items?: never
+}
+
+type NavCollapsible = BaseNavItem & {
+  items: (BaseNavItem & { url: string })[]
+  url?: never
+}
+
+type NavItem = NavCollapsible | NavLink
+
+interface NavGroup {
+  title: string
+  items: NavItem[]
+}
+
+interface SidebarData {
+  //   user: User
+  //   teams: Team[]
+  navGroups: NavGroup[]
+}
+
+export type {
+  NavCollapsible,
+  NavGroup as NavGroupProps,
+  NavItem,
+  NavLink,
+  SidebarData,
+}
+```
+
+search-context.tsx
+
+- children and keydown. client side
+
+```tsx
+import React from 'react'
+import { CommandMenu } from '~/components/command-menu'
+
+interface SearchContextType {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const SearchContext = React.createContext<SearchContextType | null>(null)
+
+interface Props {
+  children: React.ReactNode
+}
+
+export function SearchProvider({ children }: Props) {
+  const [open, setOpen] = React.useState(false)
+
+  React.useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setOpen((open) => !open)
+      }
+    }
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
+
+  return (
+    <SearchContext.Provider value={{ open, setOpen }}>
+      {children}
+      <CommandMenu />
+    </SearchContext.Provider>
+  )
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useSearch = () => {
+  const searchContext = React.useContext(SearchContext)
+
+  if (!searchContext) {
+    throw new Error('useSearch has to be used within <SearchContext.Provider>')
+  }
+
+  return searchContext
+}
+```
 
 sidebar-data.tsx
 
+- with the icons.
+
+```tsx
+import type { SidebarData } from '../components/layout/types'
+
+export const sidebarData: SidebarData = {
+  navGroups: [{ title: 'Menu', items: links }],
+}
+```
+
 - auth.login --> navigate
+
+```tsx
+  return redirect('/home', {
+```
 
 \_index-browser.test.tsx
 
@@ -244,33 +606,395 @@ export const loader = ({ request }: Route.LoaderArgs) => {
   throw redirect('/')
 ```
 
-####
+#### sidebar layout
 
-Search
+Search.tsx
+
+- type + placeholder
+
+```tsx
+import { IconSearch } from '@tabler/icons-react'
+import { Button } from '~/components/ui/button'
+import { useSearch } from '~/context/search-context'
+import { cn } from '~/lib/utils'
+
+interface Props {
+  className?: string
+  type?: React.HTMLInputTypeAttribute
+  placeholder?: string
+}
+
+export function Search({ className = '', placeholder = 'Search' }: Props) {
+  const { setOpen } = useSearch()
+  return (
+    <Button
+      variant='outline'
+      className={cn(
+        'bg-muted/25 text-muted-foreground hover:bg-muted/50 relative h-8 w-full flex-1 justify-start rounded-md text-sm font-normal shadow-none sm:pr-12 md:w-40 md:flex-none lg:w-56 xl:w-64',
+        className
+      )}
+      onClick={() => setOpen(true)}>
+      <IconSearch
+        aria-hidden='true'
+        className='absolute top-1/2 left-1.5 -translate-y-1/2'
+      />
+      <span className='ml-3'>{placeholder}</span>
+      <kbd className='bg-muted pointer-events-none absolute top-[0.3rem] right-[0.3rem] hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none sm:flex'>
+        <span className='text-xs'>⌘</span>
+      </kbd>
+    </Button>
+  )
+}
+```
+
+##### sidebar , head, main
+
+- functionallity scroll to top and fixed optin., offset + scroll listener.
+
+- flex grow
 
 Header
 
+```tsx
+import React from 'react'
+// import { Separator } from '~/components/ui/separator'
+// import { SidebarTrigger } from '~/components/ui/sidebar'
+import { cn } from '~/lib/utils'
+
+interface HeaderProps extends React.ComponentPropsWithRef<'header'> {
+  fixed?: boolean
+}
+
+export const Header = ({
+  className,
+  fixed,
+  children,
+  ...props
+}: HeaderProps) => {
+  const [offset, setOffset] = React.useState(0)
+
+  React.useEffect(() => {
+    const onScroll = () => {
+      setOffset(document.body.scrollTop || document.documentElement.scrollTop)
+    }
+
+    // Add scroll listener to the body
+    document.addEventListener('scroll', onScroll, { passive: true })
+
+    // Clean up the event listener on unmount
+    return () => document.removeEventListener('scroll', onScroll)
+  }, [])
+
+  return (
+    <header
+      className={cn(
+        'bg-background flex items-center gap-3 px-4 py-1 sm:gap-4',
+        fixed && 'header-fixed peer/header fixed z-50 w-[inherit] rounded-md',
+        offset > 10 && fixed ? 'shadow-sm' : 'shadow-none',
+        className
+      )}
+      {...props}>
+      {/* <SidebarTrigger
+        variant='outline'
+        className='scale-125 sm:scale-100'
+      />
+      <Separator
+        orientation='vertical'
+        className='h-6'
+      /> */}
+      {children}
+    </header>
+  )
+}
+
+Header.displayName = 'Header'
+```
+
 Main
+
+```tsx
+import type React from 'react'
+import { cn } from '~/lib/utils'
+
+interface MainProps extends React.ComponentPropsWithRef<'main'> {
+  fixed?: boolean
+}
+
+export const Main = ({ fixed, ...props }: MainProps) => {
+  return (
+    <main
+      className={cn(
+        'peer-[.header-fixed]/header:mt-16',
+        'px-4 py-6',
+        fixed && 'fixed-main flex grow flex-col overflow-hidden'
+      )}
+      {...props}
+    />
+  )
+}
+
+Main.displayName = 'Main'
+```
 
 app-sidebar
 
-```
+```ts
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+} from '~/components/ui/sidebar'
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  return (
+    <Sidebar
+      collapsible='icon'
+      variant='floating'
+      {...props}>
+      {/* <SidebarHeader>
+        <TeamSwitcher teams={sidebarData.teams} />
+      </SidebarHeader>
+      <SidebarContent>
+        {sidebarData.navGroups.map((props) => (
+          <NavGroup
+            key={props.title}
+            {...props}
+          />
+        ))}
 
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={sidebarData.user} />
+      </SidebarFooter>
+      <SidebarRail /> */}
+      sidebar
+    </Sidebar>
+  )
+}
 ```
 
 #### navgroups setup
 
 navgroups
 
-```tsx
+- sidebar Menusub buttons
 
+```tsx
+import { ChevronRight } from 'lucide-react'
+import type { ReactNode } from 'react'
+import { Link, useLocation } from 'react-router'
+import { Badge } from '~/components/ui/badge'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '~/components/ui/collapsible'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  useSidebar,
+} from '~/components/ui/sidebar'
+import type { NavCollapsible, NavGroupProps, NavItem, NavLink } from './types'
+
+export function NavGroup({ title, items }: NavGroupProps) {
+  const { state } = useSidebar()
+  const { pathname: href } = useLocation()
+
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>{title}</SidebarGroupLabel>
+      <SidebarMenu>
+        {items.map((item) => {
+          const key = `${item.title}-${item.url}`
+
+          if (!item.items)
+            return (
+              <SidebarMenuLink
+                key={key}
+                item={item}
+                href={href}
+              />
+            )
+
+          if (state === 'collapsed')
+            return (
+              <SidebarMenuCollapsedDropdown
+                key={key}
+                item={item}
+                href={href}
+              />
+            )
+
+          return (
+            <SidebarMenuCollapsible
+              key={key}
+              item={item}
+              href={href}
+            />
+          )
+        })}
+      </SidebarMenu>
+    </SidebarGroup>
+  )
+}
+
+const NavBadge = ({ children }: { children: ReactNode }) => (
+  <Badge className='rounded-full px-1 py-0 text-xs'>{children}</Badge>
+)
+
+const SidebarMenuLink = ({ item, href }: { item: NavLink; href: string }) => {
+  const { setOpenMobile } = useSidebar()
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        asChild
+        isActive={checkIsActive(href, item)}
+        tooltip={item.title}>
+        <Link
+          to={item.url}
+          onClick={() => setOpenMobile(false)}>
+          {item.icon && <item.icon />}
+          <span>{item.title}</span>
+          {item.badge && <NavBadge>{item.badge}</NavBadge>}
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  )
+}
+
+const SidebarMenuCollapsible = ({
+  item,
+  href,
+}: {
+  item: NavCollapsible
+  href: string
+}) => {
+  const { setOpenMobile } = useSidebar()
+  return (
+    <Collapsible
+      asChild
+      defaultOpen={checkIsActive(href, item, true)}
+      className='group/collapsible'>
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton tooltip={item.title}>
+            {item.icon && <item.icon />}
+            <span>{item.title}</span>
+            {item.badge && <NavBadge>{item.badge}</NavBadge>}
+            <ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent className='CollapsibleContent'>
+          <SidebarMenuSub>
+            {item.items.map((subItem) => (
+              <SidebarMenuSubItem key={subItem.title}>
+                <SidebarMenuSubButton
+                  asChild
+                  isActive={checkIsActive(href, subItem)}>
+                  <Link
+                    to={subItem.url}
+                    onClick={() => setOpenMobile(false)}>
+                    {subItem.icon && <subItem.icon />}
+                    <span>{subItem.title}</span>
+                    {subItem.badge && <NavBadge>{subItem.badge}</NavBadge>}
+                  </Link>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  )
+}
+
+const SidebarMenuCollapsedDropdown = ({
+  item,
+  href,
+}: {
+  item: NavCollapsible
+  href: string
+}) => {
+  return (
+    <SidebarMenuItem>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <SidebarMenuButton
+            tooltip={item.title}
+            isActive={checkIsActive(href, item)}>
+            {item.icon && <item.icon />}
+            <span>{item.title}</span>
+            {item.badge && <NavBadge>{item.badge}</NavBadge>}
+            <ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+          </SidebarMenuButton>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          side='right'
+          align='start'
+          sideOffset={4}>
+          <DropdownMenuLabel>
+            {item.title} {item.badge ? `(${item.badge})` : ''}
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {item.items.map((sub) => (
+            <DropdownMenuItem
+              key={`${sub.title}-${sub.url}`}
+              asChild>
+              <Link
+                to={sub.url}
+                className={`${checkIsActive(href, sub) ? 'bg-secondary' : ''}`}>
+                {sub.icon && <sub.icon />}
+                <span className='max-w-52 text-wrap'>{sub.title}</span>
+                {sub.badge && (
+                  <span className='ml-auto text-xs'>{sub.badge}</span>
+                )}
+              </Link>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </SidebarMenuItem>
+  )
+}
+
+function checkIsActive(href: string, item: NavItem, mainNav = false) {
+  return (
+    href === item.url || // /endpint?search=param
+    href.split('?')[0] === item.url || // endpoint
+    !!item?.items?.filter((i) => i.url === href).length || // if child nav is active
+    (mainNav &&
+      href.split('/')[1] !== '' &&
+      href.split('/')[1] === item?.url?.split('/')[1])
+  )
+}
 ```
 
 sidebar-data
 
 ```tsx
-
+interface SidebarData {
+  user: User
+  teams: Team[]
+  navGroups: NavGroup[]
+}
 ```
+
+### pages
 
 #### sidebar data into nav coom/lay
 
@@ -513,6 +1237,8 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
 }
 ```
 
+### Content
+
 ##### search
 
 \_dashboard.\_courses.tsx
@@ -578,8 +1304,8 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
 ```tsx
 <div>
   <div
-    className={`grid px-4 sm:px-8 row-[2] grid-cols-1 w-full lg:w-5xl  mx-auto pt-12 pb-20 gap-8 place-items-center transition-all linear duration-300 
-          
+    className={`grid px-4 sm:px-8 row-[2] grid-cols-1 w-full lg:w-5xl  mx-auto pt-12 pb-20 gap-8 place-items-center transition-all linear duration-300
+
           `}>
     {
       <div className='px-4 sm:px-0 md:row-[1]'>
@@ -1050,7 +1776,7 @@ export const defaultSrc = replaceNewLinesWithSpaces(`
 
 export const scriptSrc = replaceNewLinesWithSpaces(`
   ${defaultSrc}
-  
+
 `)
 
 export const frameSrc = replaceNewLinesWithSpaces(`
@@ -1296,4 +2022,8 @@ export const middleware = [
 export async function loader({ context }: Route.LoaderArgs) {
   return null
 }
+```
+
+```
+
 ```
