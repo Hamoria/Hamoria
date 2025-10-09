@@ -42,4 +42,9 @@ export default defineConfig({
 		// biome-ignore lint/style/noProcessEnv: Its ok to use process.env here
 		port: Number(process.env.PORT || 4280),
 	},
+	test: {
+		typecheck: {
+			enabled: true,
+		},
+	},
 })
