@@ -2,10 +2,11 @@
 
 ##
 
-###
+### set up cross container ssr prod ready
 
 #### vite setup micro orm  with vite
 
+[get-started] https://mikro-orm.io/docs/guide/first-entity
 
 ```sh
 pnpm add @mikro-orm/core \
@@ -27,6 +28,8 @@ pnpm add -D @vitejs/plugin-react
 package.json
 
 - some packed package for mjs it seams, dont need patch
+
+[hono] https://v2.remix.run/resources/remix-hono
 
 ```json
 {
@@ -86,6 +89,8 @@ vite.config.ts
 ```
 
 vite.mikro-orm.config.ts
+
+[bundle-db-client]https://vite.dev/guide/build.html#library-mode
 
 ```ts
 import { defineConfig } from "vite"
@@ -271,6 +276,21 @@ setup\dbName.ts
 // biome-ignore lint: We need to check env vars
 // process.env.DB_NAME = `eri_test_${math.floor(Math.random() * 10000)}`
 ```
+
+
+### request context with decorators and identity map
+
+1. ...
+- [-]use decorators
+	-
+- [-]withORM construct microorm FOR server context
+- [-]db should add migrators and auth
+- [-]server lib load env
+2. ....
+- [-] mult zod typings
+3. ....
+- [-] records are in identity map
+- [-] db types
 
 #### micro orm for entities
 
@@ -646,7 +666,7 @@ export type OEnv = z.output<typeof Env>
 ```
 
 
-####
+#### entity records
 
 server\db\entries
 
@@ -775,7 +795,7 @@ export class User extends RecordSoft implements UserBase {
 ```
 
 
-#####
+##### database types
 
 NodeEnv.ts
 
@@ -885,4 +905,624 @@ export const DatabaseUserPassword = z.string().min(8)
 export type IDatabaseUserPassword = z.input<typeof DatabaseUserPassword>
 
 export type ODatabaseUserPassword = z.output<typeof DatabaseUserPassword>
+```
+
+### complete incomplete  request-scoped EntityManager for singleton MikroOrm instance.
+
+- configuration define connection
+
+db/congig --> withORM middleware -> server entry point
+
+#### simplify ctx  w getRoute match ctx setup for middleware
+
+```sh
+pnpm add @node-rs/argon2
+pnpm add better-auth-mikro-orm
+```
+
+
+server\context.ts
+
+```ts
+import type { Options } from "@mikro-orm/core"
+
+import { authContext } from "./contexts/auth"
+import { matchesContext } from "./contexts/matches"
+import { ormContext } from "./contexts/orm"
+import { resHeadersContext } from "./contexts/resHeaders"
+import { getRouteMatches } from "./lib/utils/routes"
+
+export const getAppContext = async (ctx: Context, options: Options) => {
+	// get the locale from the context
+	const locale = i18next.getLocale(ctx)
+	// get t function for the default namespace
+	const t = await i18next.getFixedT(ctx)
+	// get the server environment
+	const env = getServerEnv()
+
+	const context = new RouterContextProvider()
+
+	context.set(authContext, ctx.var.auth)
+	context.set(ormContext, ctx.var.orm)
+	context.set(resHeadersContext, ctx.var.resHeaders)
+
+	const matches = getRouteMatches(options.build.routes, ctx.req.url, options.build.basename)
+
+	context.set(matchesContext, matches ?? [])
+
+	return {
+		lang: locale,
+		t,
+
+		env,
+		clientEnv: getClientEnv(),
+		// We do not add this to AppLoadContext type because it's not needed in the loaders, but it's used above to handle requests
+		body: ctx.body,
+		context,
+	}
+}
+
+export const getLoadContext = async (c: Context, options: Options) => {
+	const ctx = new RouterContextProvider()
+	const globalCtx = await getAppContext(c, options)
+	ctx.set(globalAppContext, globalCtx)
+	return ctx
+}
+```
+
+##### ctx
+
+contexts\-->
+
+admin.ts
+
+```ts
+import { createContext } from "react-router"
+
+// import type { AdminViewer } from "../lib/admin/AdminArgs.js"
+
+export const adminContext = createContext<null>()
+```
+
+auth.ts
+
+```ts
+import { createContext } from "react-router"
+
+import type { Auth } from "../lib/auth/auth"
+
+export const authContext = createContext<Auth>()
+```
+
+matches.ts
+
+```ts
+import { createContext } from "react-router"
+
+import type { RouteMatchWithPattern } from "../lib/utils/routes"
+
+export const matchesContext = createContext<RouteMatchWithPattern[]>()
+```
+
+orm.ts
+
+```ts
+import type { MikroORM } from "@mikro-orm/mongodb"
+import { createContext } from "react-router"
+
+export const ormContext = createContext<MikroORM>()
+```
+
+resHeaders.ts
+
+```ts
+import { createContext } from "react-router"
+
+export const resHeadersContext = createContext<Headers>()
+```
+
+#### connect and create and configure the server + route manifest
+
+Simplify.ts
+
+```ts
+export type Simplify<T> = { [K in keyof T]: T[K] } & {}
+```
+
+
+index.ts
+
+```ts
+import { csrf } from "hono/csrf"
+import { RouterContextProvider } from "react-router"
+
+import type { auth } from "./lib/auth/auth.ts"
+import config from "./lib/config.ts"
+import type { orm } from "./lib/db/orm.ts"
+import { getRouteMatches } from "./lib/utils/routes.ts"
+import { withAuth } from "./middlewares/hono/withAuth.ts"
+import { withOrm } from "./middlewares/hono/withOrm.ts"
+import { withResponseHeaders } from "./middlewares/hono/withResponseHeaders.ts"
+
+export interface Variables {
+	orm: typeof orm
+	auth: typeof auth
+	resHeaders: Headers
+}
+
+export interface Env {
+	Variables: Variables
+}
+
+export default await createHonoServer({
+	port: config.server.port,
+	configure(server) {
+		server
+			.use(withResponseHeaders())
+			.use(csrf()) // TODO: specify origin for production
+			.use(withOrm())
+			.use(withAuth())
+
+		server.use("*", i18next(i18nextOpts))
+	},
+	defaultLogger: false,
+	getLoadContext,
+})
+```
+
+lib\utils\routes.ts
+
+```ts
+// Based on: https://github.com/remix-run/react-router/blob/04a62722fea11baa9ccea682879e530791e28c00/packages/react-router/lib/server-runtime/routes.ts#L19-L56
+
+import { matchRoutes, type ServerBuild } from "react-router"
+import type { Simplify } from "../../../lib/types/Simplify"
+
+export type ServerRouteManifest = ServerBuild["routes"]
+
+export type ServerRoute = NonNullable<ServerRouteManifest[keyof ServerRouteManifest]>
+
+export type AgnosticRouteMatch = NonNullable<ReturnType<typeof matchRoutes>>[number]
+
+export type RouteMatchWithPattern = Simplify<AgnosticRouteMatch & { pattern: string }>
+
+const normalizePath = (path: string) => path.replace(/\/{2,}/, "/").replace(/\/$/, "")
+
+function groupRoutesByParentId(manifest: ServerRouteManifest) {
+	const routes: Record<string, Omit<ServerRoute, "children">[]> = {}
+
+	Object.values(manifest).forEach((route) => {
+		if (route) {
+			const parentId = route.parentId || ""
+			if (!routes[parentId]) {
+				routes[parentId] = []
+			}
+			routes[parentId].push(route)
+		}
+	})
+
+	return routes
+}
+
+// Create a map of routes by parentId to use recursively instead of
+// repeatedly filtering the manifest.
+export function createRoutes(
+	manifest: ServerRouteManifest,
+	parentId = "",
+	routesByParentId: Record<string, Omit<ServerRoute, "children">[]> = groupRoutesByParentId(manifest)
+): ServerRoute[] {
+	return (routesByParentId[parentId] || []).map((route) => ({
+		...route,
+
+		children: createRoutes(manifest, route.id, routesByParentId),
+	}))
+}
+
+export function getRouteMatches(manifest: ServerRouteManifest, url: string | URL, basename = "/") {
+	const { pathname: current } = new URL(url)
+
+	const matches = matchRoutes(createRoutes(manifest), current, basename)
+
+	if (!matches) {
+		return undefined
+	}
+
+	const res: RouteMatchWithPattern[] = []
+
+	matches.reduce((prev, next) => {
+		// Make pattern for next match. Here's some notes:
+		// prev.pattern will be always empty for the first match (which is `root.tsx`), because it wasn't assigned to any match yet
+		// prev.route.path will be empty string for `root.tsx`, so we replace extra leading `/` in normalizePath
+		// next.route.path might be `undefined`, so we assing empty string and strip out extra `/` later
+		const pattern = normalizePath(
+			`${(prev as any as RouteMatchWithPattern).pattern || prev.route.path || ""}/${next.route.path || ""}`
+		)
+
+		const match = { ...next, pattern }
+
+		res.push(match)
+
+		return match
+	})
+
+	return res
+}
+
+export function getCurrentRoteFromMatches(matches: RouteMatchWithPattern[], url: string | URL) {
+	const { pathname: current } = new URL(url)
+
+	return matches.find(({ pathname }) => pathname === current)
+}
+
+export function getCurrentRouteMeta(routes: ServerBuild["routes"], url: string | URL) {
+	const matches = getRouteMatches(routes, url)
+
+	return matches ? getCurrentRoteFromMatches(matches, url) : undefined
+}
+```
+
+#### better auth part of client
+
+
+auth\-->
+
+auth.ts
+
+```ts
+import { betterAuth } from "better-auth"
+import { passkey } from "better-auth/plugins/passkey"
+import { mikroOrmAdapter } from "better-auth-mikro-orm"
+
+import config from "../config.js"
+
+import { orm } from "../db/orm.js"
+
+import { hash, verify } from "./password"
+
+export const auth = betterAuth({
+	database: mikroOrmAdapter(orm),
+	secret: config.auth.secret,
+	emailAndPassword: {
+		enabled: true,
+		password: {
+			hash: (password) => hash(password),
+			verify: ({ hash, password }) => verify(hash, password),
+		},
+	},
+	plugins: [
+		// TODO: Add configuration
+		passkey(),
+	],
+	advanced: {
+		cookiePrefix: config.auth.cookiePrefix,
+		generateId: false, // Handled by the ORM
+	},
+})
+
+export type Auth = typeof auth
+```
+
+password.ts
+
+```ts
+import { hash as _hash, verify as _verify, type Options } from "@node-rs/argon2"
+
+const normalize = (input: string) => input.normalize("NFKC")
+
+const defaults: Options = {
+	memoryCost: 19_456, // memory size
+	timeCost: 2, // iterations
+	outputLen: 32,
+	parallelism: 1,
+	version: 1,
+}
+
+export const hash = (password: string, options?: Options) => _hash(normalize(password), { ...defaults, ...options })
+
+export const verify = (hash: string, password: string, options?: Options) =>
+	_verify(hash, normalize(password), { ...defaults, ...options })
+```
+
+##### complete orm config with auth
+
+server\lib\config.ts
+
+```ts
+const envSchema = z.object({
+
+	DB_HOST: z.string().nonempty(),
+	DB_PORT: z.string().optional(),
+	MONGO_URL: z.string().optional(),
+	MONGO_URL_LOCAL: z.string().optional(),
+	AUTH_COOKIE_PREFIX: z.string().optional(),
+	MONGODB_USER: z.string().optional(),
+	MONGODB_PASSWORD: z.string().optional(),
+	MONGODB_DATABASE: z.string().optional(),
+	MONGODB_OPTIONS: z.string().optional(),
+	AUTH_SECRET: z.string().nonempty(),
+	ISSUER: z.string().nonempty(),
+	CLIENT_ID: z.string().nonempty(),
+	CLIENT_SECRET: z.string().nonempty(),
+	SESSION_SECRET: z.string().nonempty(),
+	RESOURCE_HOST: z.string().nonempty(),
+	ISSUER_HOST: z.string().nonempty(),
+	AUDIENCE: z.string().nonempty(),
+	APP_DEPLOYMENT_ENV: z.string().optional(),
+	BLOG_NAME: z.string().nonempty(),
+})
+```
+
+
+env.d.ts
+
+```ts
+/// <reference types="react-router" />
+/// <reference types="vite/client" />
+/// <reference types="vitest" />
+```
+
+
+db\orm.ts
+
+- uh depricated, how to stable
+
+```ts
+export const createOrm = () => MikroORM.init(config) // returns Promise<MikroORM> - use async init at app startup
+// MikroORM.init(config)
+```
+
+
+zod\config.ts
+
+- complete instance setup
+
+```ts
+export const Config = z
+	.object({
+		app: App,
+		server: Server,
+		orm: Orm,
+
+		auth: Auth,
+	})
+```
+
+##### better auth fine grained configuration
+
+zod\config\auth\cookiePrefix
+
+```ts
+import { z } from "zod"
+
+export const CookiePrefix = z
+	.string()
+	.min(1)
+	.regex(/^[a-z0-9_-]+$/i)
+	.default("eri")
+
+export type ICookiePrefix = z.input<typeof CookiePrefix>
+
+export type OCookiePrefix = z.output<typeof CookiePrefix>
+```
+
+
+conhig\auth\Secrets.ts
+
+```ts
+import { z } from "zod"
+
+export const Secret = z.string().min(21)
+
+export type ISecret = z.input<typeof Secret>
+
+export type OSecret = z.output<typeof Secret>
+```
+
+
+Server.ts
+
+```ts
+import { z } from "zod"
+
+import { ServerPort } from "./server/ServerPort.js"
+
+export const Server = z
+	.object({
+		port: ServerPort,
+	})
+	.transform((value) => Object.freeze(value))
+
+export type IServer = z.input<typeof Server>
+
+export type OServer = z.output<typeof Server>
+```
+
+
+withAuth.ts
+
+```ts
+import { createMiddleware } from "hono/factory"
+
+import { auth } from "../../lib/auth/auth"
+
+export const withAuth = () =>
+	createMiddleware(async (ctx, next) => {
+		ctx.set("auth", auth)
+
+		await next()
+	})
+```
+
+
+withOrm.ts
+
+```ts
+import { RequestContext } from "@mikro-orm/mongodb"
+import { createMiddleware } from "hono/factory"
+
+import { orm } from "../../lib/db/orm"
+
+export const withOrm = () =>
+	createMiddleware(async (ctx, next) => {
+		ctx.set("orm", orm)
+
+		return RequestContext.create(orm.em, () => next())
+	})
+```
+
+
+withResponseHeaders.ts
+
+```ts
+import { createMiddleware } from "hono/factory"
+
+import type { Env } from "../../../server"
+
+export const withResponseHeaders = () =>
+	createMiddleware<Env>(async (ctx, next) => {
+		const headers = new Headers()
+
+		ctx.set("resHeaders", headers)
+		try {
+			await next()
+		} finally {
+			headers.forEach((value, name) => {
+				if (!ctx.res.headers.get(name) || ctx.res.headers.has("set-cookie")) {
+					ctx.res.headers.set(name, value)
+				}
+			})
+		}
+	})
+```
+
+Auth.ts
+
+```ts
+import { z } from "zod"
+
+import { CookiePrefix } from "./auth/CookiePrefix"
+import { Secret } from "./auth/Secret"
+
+export const Auth = z
+	.object({
+		secret: Secret,
+		cookiePrefix: CookiePrefix,
+	})
+	.transform((value) => Object.freeze(value))
+
+export type IAuth = z.input<typeof Auth>
+
+export type OAuth = z.output<typeof Auth>
+```
+
+
+#### uh depricated + outdated challange
+AUTH_SECRET=supersecretkeywithlength
+11:52:37 AM [vite] Internal server error: [
+  {
+    "origin": "string",
+    "code": "too_small",
+    "minimum": 21,
+    "inclusive": true,
+    "path": [
+      "auth",
+      "secret"
+    ],
+    "message": "Too small: expected string to have >=21 characters"
+  }
+]
+
+12:16:49 PM [vite] (ssr) Error when evaluating SSR module app/server/index.ts: Please provide either 'type' or 'entity' attribute in Node._id. If you are using decorators, ensure you have 'emitDecoratorMetadata' enabled in your tsconfig.json.
+
+```sh
+pnpm add @types/mongodb
+```
+Package                                 │ Current │ Latest     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ @types/mongodb                          │ 4.0.7   │ Deprecated │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ @biomejs/biome (dev)                    │ 2.2.4   │ 2.2.5      │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ @react-router/dev (dev)                 │ 7.9.1   │ 7.9.4      │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ @react-router/fs-routes (dev)           │ 7.9.1   │ 7.9.4      │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ @react-router/node                      │ 7.9.1   │ 7.9.4      │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ @tailwindcss/vite (dev)                 │ 4.1.13  │ 4.1.14     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ hono                                    │ 4.9.7   │ 4.9.10     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ isbot                                   │ 5.1.30  │ 5.1.31     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ lefthook (dev)                          │ 1.13.0  │ 1.13.6     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ react-router                            │ 7.9.1   │ 7.9.4      │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ tailwindcss (dev)                       │ 4.1.13  │ 4.1.14     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ tsx (dev)                               │ 4.20.5  │ 4.20.6     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ typescript (dev)                        │ 5.9.2   │ 5.9.3      │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ vite (dev)                              │ 7.1.5   │ 7.1.9      │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ zod                                     │ 4.1.9   │ 4.1.12     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ @dotenvx/dotenvx (dev)                  │ 1.49.1  │ 1.51.0     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ @rollup/rollup-linux-x64-gnu (optional) │ 4.50.2  │ 4.52.4     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ @types/node (dev)                       │ 24.5.1  │ 24.7.1     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ @types/react (dev)                      │ 19.1.13 │ 19.2.2     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ @types/react-dom (dev)                  │ 19.1.9  │ 19.2.1     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ i18next                                 │ 25.5.2  │ 25.6.0     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ knip (dev)                              │ 5.63.1  │ 5.64.3     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ playwright (dev)                        │ 1.55.0  │ 1.56.0     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ react                                   │ 19.1.1  │ 19.2.0     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ react-dom                               │ 19.1.1  │ 19.2.0     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ remix-i18next                           │ 7.3.0   │ 7.4.2      │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ happy-dom (dev)                         │ 18.0.1  │ 20.0.0     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ react-i18next                           │ 15.7.3  │ 16.0.0     │
+├─────────────────────────────────────────┼─────────┼────────────┤
+│ lucide-react                            │ 0.544.0 │ 0.545.0    │
+
+micro-orm.config.ts
+
+- ts up is not configuring this
+
+```
+const config: Options = {
+	driver: MongoDriver,
+	dbName: "mongodb.db",
+	// folder-based discovery setup, using common filename suffix
+	entities: ["dist/**/*.entity.js"],
+	entitiesTs: ["src/**/*.entity.ts"],
+	entities: ["dist/db/entities/*.js"], // compiled JS files in dist
+	entitiesTs: ["app/server/db/entities/*.ts"], // your TS sources
+	// we will use the ts-morph reflection, an alternative to the default reflect-metadata provider
+	// check the documentation for their differences: https://mikro-orm.io/docs/metadata-providers
+	metadataProvider: TsMorphMetadataProvider,
+
+}
+```
+
+```json
+"@mikro-orm/migrations": "6.5.7",
+
+		"@node-rs/argon2": "2.0.2",
+
+		"@types/mongodb": "4.0.7",
+
+		"better-auth-mikro-orm": "0.4.3",
 ```
