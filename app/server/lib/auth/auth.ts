@@ -1,0 +1,34 @@
+import { betterAuth } from "better-auth"
+import { passkey } from "better-auth/plugins/passkey"
+import { mikroOrmAdapter } from "better-auth-mikro-orm"
+
+import config from "../config.js"
+
+import { orm } from "../db/orm.js"
+
+import { hash, verify } from "./password"
+
+export const auth = betterAuth({
+	database: mikroOrmAdapter(orm),
+	secret: config.auth.secret,
+	emailAndPassword: {
+		enabled: true,
+		password: {
+			hash: (password) => hash(password),
+			verify: ({ hash, password }) => verify(hash, password),
+		},
+	},
+	plugins: [
+		// TODO: Add configuration
+		passkey(),
+	],
+	advanced: {
+		cookiePrefix: config.auth.cookiePrefix,
+		generateId: false, // Handled by the ORM
+	},
+	telemetry: {
+		enabled: false,
+	},
+})
+
+export type Auth = typeof auth

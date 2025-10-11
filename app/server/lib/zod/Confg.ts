@@ -1,16 +1,16 @@
 import { z } from "zod"
 
 import { App } from "./config/App"
-// import { Auth } from "./config/Auth"
+import { Auth } from "./config/Auth"
 import { Orm } from "./config/Orm"
-// import { Server } from "./config/Server"
+import { Server } from "./config/Server"
 
 export const Config = z
 	.object({
 		app: App,
-		// server: Server,
+		server: Server,
 		orm: Orm,
-		// auth: Auth,
+		auth: Auth,
 	})
 	.transform((value) => Object.freeze(value))
 

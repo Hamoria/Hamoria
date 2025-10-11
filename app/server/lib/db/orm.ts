@@ -9,7 +9,8 @@ export const orm = MikroORM.initSync(config)
 /**
  * @deprecated - use `orm` object directly
  */
-export const createOrm = () => MikroORM.init(config)
+export const createOrm = () => MikroORM.init(config) // returns Promise<MikroORM> - use async init at app startup
+// MikroORM.init(config)
 
 /**
  * @deprecated - use `orm` object directly
@@ -19,7 +20,7 @@ export function getOrm(): Promise<MikroORM> {
 		cache = createOrm()
 	}
 
-	return cache
+	return cache!
 }
 
 export type WithOrmCallback<TResult, TArgs extends unknown[]> = (
