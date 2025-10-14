@@ -2,10 +2,11 @@
 
 ##
 1. cross container
-- first entry dev dependencies
-- discover
+- first entry dev dependencies - discover script on init
+- health check container
 2. identity map, decorators
--
+- leader based, env
+- record lifecycle
 3. singlaton
 
 4. edge
