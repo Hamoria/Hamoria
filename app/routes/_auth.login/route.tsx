@@ -11,7 +11,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-	const formData = await request.formData()
+	// const formData = await request.formData()
 
 	//   let user = await findUser({
 	//     email: formData.get('email'),
@@ -27,35 +27,4 @@ export async function action({ request }: ActionFunctionArgs) {
 	})
 }
 
-import { getFormProps, getInputProps, useForm } from "@conform-to/react"
-import { getZodConstraint, parseWithZod } from "@conform-to/zod/v4"
-import type { FC } from "react"
-import { Form, useNavigate } from "react-router"
-
-import { AdminLogInInput } from "../../server/lib/zod/admin/AdminLogInInput"
-// import type { Route } from "./+types/route.ts"
-
-// export const AdminLoginPage: FC<Route.ComponentProps> = ({ actionData }) => {
-export default function ({ actionData }) {
-	// const [form, fields] = useForm({
-	// 	lastResult: actionData,
-	// 	constraint: getZodConstraint(AdminLogInInput as unknown as any),
-
-	// 	onValidate: ({ formData }) => parseWithZod(formData, { schema: AdminLogInInput as unknown as any }),
-	// })
-
-	const navigate = useNavigate()
-
-	return (
-		<Form
-			// {...getFormProps(form)}
-			method="post"
-			action="/admin/login"
-			className="flex h-full items-center justify-center"
-		>
-			<div className="mx-auto flex h-full w-full flex-col items-center justify-center gap-4 lg:w-2/3">
-				<fieldset className="flex flex-col gap-2">s</fieldset>
-			</div>
-		</Form>
-	)
-}
+export { default } from "./LoginPage"

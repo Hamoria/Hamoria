@@ -7,4 +7,5 @@ export default {
 		unstable_optimizeDeps: true,
 		v8_middleware: true,
 	},
+	ssr: true,
 } satisfies Config

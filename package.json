@@ -87,12 +87,14 @@
 		"react-icons": "5.5.0",
 		"react-router": "7.9.1",
 		"react-router-hono-server": "2.21.0",
+		"react-use-event-hook": "0.9.6",
 		"reflect-metadata": "0.2.2",
 		"remix-hono": "0.0.18",
 		"remix-i18next": "7.3.0",
 		"rollup-plugin-swc": "0.2.1",
+		"sonner": "2.0.7",
 		"tailwind-merge": "3.3.1",
-		"zod": "3.25.76"
+		"zod": "4.1.12"
 	},
 	"devDependencies": {
 		"@babel/preset-typescript": "7.27.1",
@@ -143,6 +145,9 @@
 		"pnpm": ">=10.12.4"
 	},
 	"pnpm": {
+		"resolutions": {
+			"zod": "4.1.12"
+		},
 		"onlyBuiltDependencies": [
 			"@biomejs/biome",
 			"@tailwindcss/oxide",

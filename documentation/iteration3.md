@@ -32,7 +32,7 @@ export type IAdminLogInInput = z.input<typeof AdminLogInInput>
 export type OAdminLogInInput = z.output<typeof AdminLogInInput>
 ```
 
-####
+#### collocated auth login
 
 _auth.login\route.tsx
 
@@ -181,3 +181,131 @@ export type IAdminLogInInput = z.input<typeof AdminLogInInput>
 
 export type OAdminLogInInput = z.output<typeof AdminLogInInput>
 ```
+
+#### pass key basic setup, async trigger
+
+```sh
+pnpm add react-use-event-hook
+pnpm dlx shadcn@latest add sonner
+pnpm add zod 4.1.12
+```
+
+2025-10-14T16:39:17.473Z WARN [Better Auth]: Your Better Auth config includes advanced.generateId which is deprecated. Please use advanced.database.generateId instead. This will be removed in future releases.
+2025-10-14T16:39:17.474Z ERROR [Better Auth]: BetterAuthError [BetterAuthError: [Mikro ORM Adapter] Cannot find metadata for "Verification" entity. Make sure it defined and listed in your Mikro ORM config.] {
+  cause: undefined
+}
+ SERVER_ERROR:  [BetterAuthError: [Mikro ORM Adapter] Cannot find metadata for "Verification" entity. Make sure it defined and listed in your Mikro ORM config.] {
+  cause: undefined
+}
+
+lib\auth.ts
+
+```ts
+import { createAuthClient } from "better-auth/client"
+import { passkeyClient } from "better-auth/client/plugins"
+
+export const authClient = createAuthClient({
+	plugins: [passkeyClient()],
+})
+```
+
+\admin\AdminLoginInput.ts
+
+```ts
+import { z } from "zod"
+
+import { AdminPassword } from "./AdminPassword"
+
+export const AdminLogInInput = z.object({
+	email: z.string().email(),
+	password: AdminPassword,
+})
+
+export type IAdminLogInInput = z.input<typeof AdminLogInInput>
+
+export type OAdminLogInInput = z.output<typeof AdminLogInInput>
+```
+
+_auth_\LooginPage.tsx
+
+```tsx
+import { authClient } from "~/lib/auth"
+import { AdminLogInInput } from "./admin/AdminLogInInput"
+
+const AdminLoginPage: FC<Route.ComponentProps> = ({ actionData }) => {
+const logInWithPassKey = useEvent(async () => {
+		const response = await authClient.signIn.passkey()
+
+		if (response?.error) {
+			toast.error("Can't log in")
+		} else {
+			await navigate("/admin", { replace: true })
+		}
+	})
+
+<div>
+				<Card className="mx-auto flex h-full w-full flex-col items-center justify-center gap-4 lg:w-2/3">
+					<CardHeader>
+						<CardTitle>Login</CardTitle>
+
+						<CardDescription>You need to log in to your account to access this page</CardDescription>
+					</CardHeader>
+
+					<CardContent className="grid gap-5">
+						<fieldset className="flex flex-col gap-2">
+							<Label htmlFor={fields.email.id}>E-mail</Label>
+
+							<Input
+								{...getInputProps(fields.email, { type: "email" })}
+								errors={fields.email.errors || form.errors}
+								placeholder="me@example.com"
+								className="placeholder:lowercase"
+							/>
+						</fieldset>
+						<Separator />
+						<fieldset className="flex flex-col gap-2">
+							<Label htmlFor={fields.password.id}>Password</Label>
+
+							<Input
+								{...getInputProps(fields.password, { type: "password" })}
+								errors={fields.password.errors || form.errors}
+								placeholder="Your password"
+								className="placeholder:lowercase"
+							/>
+						</fieldset>
+					</CardContent>
+
+					<CardFooter className="flex-col gap-4">
+						<Button type="submit">Log in</Button>
+
+						<Separator />
+
+						<Button type="button" variant="secondary" onClick={logInWithPassKey}>
+							<Fingerprint />
+
+							<span>Use Passkey</span>
+						</Button>
+					</CardFooter>
+				</Card>
+```
+
+route.tsx
+
+```tsx
+export { default } from "./LoginPage"
+```
+
+api.auth.$.ts
+
+```ts
+import { auth } from "../server/lib/auth/auth.js"
+
+import type { Route } from "./+types/api.auth.$.js"
+
+export const loader = ({ request }: Route.LoaderArgs) => auth.handler(request)
+
+export const action = ({ request }: Route.ActionArgs) => auth.handler(request)
+```
+
+
+#### pass key ba%
