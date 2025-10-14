@@ -2,7 +2,7 @@ import type { Context } from "hono"
 import { createContext, RouterContextProvider } from "react-router"
 import { i18next } from "remix-hono/i18next"
 import { getClientEnv, getServerEnv } from "~/env.server"
-import { authContext } from "./contexts/auth"
+// import { authContext } from "./contexts/auth"
 import { matchesContext } from "./contexts/matches"
 import { ormContext } from "./contexts/orm"
 import { resHeadersContext } from "./contexts/resHeaders"
@@ -27,7 +27,7 @@ export const getAppContext = async (ctx: Context, options: OptionsWithBuild) => 
 
 	const context = new RouterContextProvider()
 
-	context.set(authContext, ctx.var.auth)
+	// context.set(authContext, ctx.var.auth)
 	context.set(ormContext, ctx.var.orm)
 	context.set(resHeadersContext, ctx.var.resHeaders)
 
@@ -42,7 +42,7 @@ export const getAppContext = async (ctx: Context, options: OptionsWithBuild) => 
 		env,
 		clientEnv: getClientEnv(),
 		// We do not add this to AppLoadContext type because it's not needed in the loaders, but it's used above to handle requests
-		body: ctx.body,
+		body: (ctx as any).body,
 		context,
 	}
 }

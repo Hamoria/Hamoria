@@ -1,7 +1,7 @@
 {
 	"include": ["env.d.ts", "**/*.ts", "**/*.tsx", "**/**/.server/**/*.ts", ".react-router/types/**/*"],
 	"compilerOptions": {
-		"types": ["vitest/globals", "@vitest/browser/providers/playwright"],
+		"types": ["vitest/globals", "@vitest/browser/providers/playwright", "reflect-metadata"],
 		"lib": ["DOM", "DOM.Iterable", "ES2023"],
 		"isolatedModules": true,
 		"esModuleInterop": true,
@@ -12,6 +12,9 @@
 		"target": "ES2023",
 		"strict": true,
 		"allowJs": true,
+		"outDir": "dist",
+		"declaration": true,
+
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"experimentalDecorators": true,
@@ -25,5 +28,9 @@
 		"plugins": [{ "name": "@react-router/dev" }],
 		// Vite takes care of building everything, not tsc.
 		"noEmit": true
+	},
+	"ts-node": {
+		"esm": true,
+		"transpileOnly": true
 	}
 }
