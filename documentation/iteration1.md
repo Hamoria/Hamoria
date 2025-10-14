@@ -9,7 +9,7 @@ https://github.com/Hamoria/Hamoria/blob/main/documentation/iteration1.md
 
 [content]
 
-### core layout
+### core layout (active view)
 
 - current
 
@@ -303,7 +303,7 @@ export const sessionStorage = createCookieSessionStorage<SessionData>({
 export const { getSession, commitSession, destroySession } = sessionStorage
 ```
 
-#### mx-auto
+#### mx-auto get current page
 
 ```ts
 <div
@@ -346,7 +346,7 @@ xport function AuthFooter() {
 }
 ```
 
-#### dashboard dependencies
+#### dashboard dependencies (use callback, collapsible)
 
 [login-->layout-clientside]
 
@@ -606,7 +606,7 @@ export const loader = ({ request }: Route.LoaderArgs) => {
   throw redirect('/')
 ```
 
-#### sidebar layout
+#### sidebar layout (head,main props or fixed)
 
 Search.tsx
 
@@ -774,7 +774,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 }
 ```
 
-#### navgroups setup
+#### navgroups setup (sidebar, check active)
 
 navgroups
 
@@ -994,9 +994,9 @@ interface SidebarData {
 }
 ```
 
-### pages
+### pages (seg, var)
 
-#### sidebar data into nav coom/lay
+#### sidebar data into nav coom/lay (page segments)
 
 \_dashboard.\_content.\_curriculum.courses.$course.ts
 
@@ -1090,6 +1090,8 @@ pages...
 
 - all purchases
 
+### variable style
+
 #### feature support
 
 layout.css
@@ -1122,7 +1124,7 @@ import { browserslistToTargets, Features } from 'lightningcss'
 
 #### 3 composed modules
 
-##### dashboard query selector
+##### dashboard query selector (sidebar- svh + calc dockument sett)
 
 - effect on client
 
@@ -1237,9 +1239,9 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
 }
 ```
 
-### Content
+### Content (match ref, api client)
 
-##### search
+##### search (content wrapp focos ref)
 
 \_dashboard.\_courses.tsx
 
@@ -1483,7 +1485,7 @@ export function ProfileDropdown() {
 
 #### content in 2 layers
 
-##### goal
+##### goal (search + prop include)
 
 TodoList.tsx
 
@@ -1557,7 +1559,7 @@ export async function action() {
 }
 ```
 
-##### test perform action
+##### test perform action (api client)
 
 \_dashboard_courses.tsx
 

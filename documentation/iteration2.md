@@ -1,10 +1,17 @@
 #
 
 ##
+1. cross container
+- first entry dev dependencies
+2. identity map, decorators
+-
+3. singlaton
+
+4. edge
 
 ### set up cross container ssr prod ready
 
-#### vite setup micro orm  with vite
+#### vite setup micro orm  with vite (vite,package.json config)
 
 [get-started] https://mikro-orm.io/docs/guide/first-entity
 
@@ -203,7 +210,7 @@ Generated an empty chunk: "ping".
 The unstable_viteEnvironmentApi is enabled.
 This is experimental and may break your build.
 
-#### fix cross container testable
+#### fix cross container testable (health check)
 - fix test is-inside container , ignore process.env
 - we had some browser types, and should also be cross containerable.
 
@@ -280,6 +287,7 @@ setup\dbName.ts
 
 ### request context with decorators and identity map
 
+```txt
 1. ...
 - [-]use decorators
 	-
@@ -291,8 +299,9 @@ setup\dbName.ts
 3. ....
 - [-] records are in identity map
 - [-] db types
+```
 
-#### micro orm for entities
+#### micro orm for entities (leader based ts)
 
 Unable to resolve signature of property decorator when called as an expression.
   Argument of type 'undefined' is not assignable to parameter of type 'Partial<any>'.ts(1240)
@@ -537,7 +546,9 @@ prod.ts
 // export default config
 ```
 
-#### the typing of orm webb app., input, output.
+#### the typing of orm webb app., input, output. (type safe freeze ctx)
+
+
 
 lib\zod\config.ts
 
@@ -666,7 +677,7 @@ export type OEnv = z.output<typeof Env>
 ```
 
 
-#### entity records
+#### entity records (lice cycle)
 
 server\db\entries
 
@@ -907,13 +918,13 @@ export type IDatabaseUserPassword = z.input<typeof DatabaseUserPassword>
 export type ODatabaseUserPassword = z.output<typeof DatabaseUserPassword>
 ```
 
-### complete incomplete  request-scoped EntityManager for singleton MikroOrm instance.
+### complete incomplete  request-scoped EntityManager for singleton MikroOrm instance. (monolith)
 
 - configuration define connection
 
 db/congig --> withORM middleware -> server entry point
 
-#### simplify ctx  w getRoute match ctx setup for middleware
+#### simplify ctx  w getRoute match ctx setup for middleware (manifest)
 
 ```sh
 pnpm add @node-rs/argon2
@@ -970,7 +981,7 @@ export const getLoadContext = async (c: Context, options: Options) => {
 }
 ```
 
-##### ctx
+##### ctx (async store)
 
 contexts\-->
 
@@ -1021,7 +1032,7 @@ import { createContext } from "react-router"
 export const resHeadersContext = createContext<Headers>()
 ```
 
-#### connect and create and configure the server + route manifest
+#### connect and create and configure the server + route manifest(create, match, normalize)
 
 Simplify.ts
 
@@ -1161,7 +1172,7 @@ export function getCurrentRouteMeta(routes: ServerBuild["routes"], url: string |
 }
 ```
 
-#### better auth part of client
+#### better auth part of client (adapt plug in)
 
 
 auth\-->
@@ -1416,7 +1427,7 @@ export type OAuth = z.output<typeof Auth>
 ```
 
 
-#### uh depricated + outdated challange
+#### uh depricated + outdated challange (monolith)
 AUTH_SECRET=supersecretkeywithlength
 11:52:37 AM [vite] Internal server error: [
   {
@@ -1517,6 +1528,8 @@ const config: Options = {
 }
 ```
 
+#####
+
 ```json
 "@mikro-orm/migrations": "6.5.7",
 
@@ -1525,4 +1538,434 @@ const config: Options = {
 		"@types/mongodb": "4.0.7",
 
 		"better-auth-mikro-orm": "0.4.3",
+```
+
+fallow@Fallow:~/base-stack$ pnpm add reflect-metadata
+ WARN  deprecated @types/mongodb@4.0.7: mongodb provides its own types. @types/mongodb is no longer needed.
+Already up to date
+Progress: resolved 928, reused 847, downloaded 0, added 0, done
+ WARN  Issues with peer dependencies found
+.
+├─┬ react-router-hono-server 2.21.0
+│ └── ✕ unmet peer @hono/node-server@^1.18.1: found 1.15.0
+└─┬ remix-hono 0.0.18
+  ├── ✕ unmet peer i18next@^24.0.5: found 25.5.2
+  └── ✕ unmet peer zod@^3.0.0: found 4.1.9
+
+dependencies:
++ reflect-metadata 0.2.2
+
+Done in 9.8s using pnpm v10.16.1
+fallow@Fallow:~/base-stack$
+
+#####
+
+```sh
+pnpm remove @types/mongodb
+ pnpm up @hono/node-server@latest
+```
+
+allow@Fallow:~/base-stack$ pnpm up @hono/node-server@latest
+Packages: +117 -177
+++++++++++++++++++++++++++++++++++++++++++++++++-------------------------------------------------------------------------
+Progress: resolved 876, reused 753, downloaded 39, added 117, done
+node_modules/.pnpm/esbuild@0.25.10/node_modules/esbuild: Running postinstall script, done in 1.5s
+
+> @forge42/base-stack@0.0.1 preinstall /home/fallow/base-stack
+> npx --yes only-allow pnpm
+
+npm warn Unknown env config "enable-pre-post-scripts". This will stop working in the next major version of npm.
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
+npm warn Unknown project config "enable-pre-post-scripts". This will stop working in the next major version of npm.
+npm warn Unknown project config "side-effects-cache". This will stop working in the next major version of npm.
+
+> @forge42/base-stack@0.0.1 postinstall /home/fallow/base-stack
+> pnpm run typegen
+
+
+> @forge42/base-stack@0.0.1 typegen /home/fallow/base-stack
+> react-router typegen
+
+The unstable_viteEnvironmentApi is enabled.
+This is experimental and may break your build.
+
+ WARN  Issues with peer dependencies found
+.
+└─┬ remix-hono 0.0.18
+  └── ✕ unmet peer i18next@^24.0.5: found 25.5.2
+
+optionalDependencies:
+- @rollup/rollup-linux-x64-gnu 4.50.2
++ @rollup/rollup-linux-x64-gnu 4.52.4
+
+
+```sh
+pnpm add rollup-plugin-swc
+
+pnpm add --save-dev @mikro-orm/cli \
+                       typescript \
+                       ts-node \
+                       @types/node \
+                       vitest
+```
+
+tsconfig.json
+
+```json
+{
+"outDir": "dist",
+		"declaration": true,
+		},
+	"ts-node": {
+		"esm": true,
+		"transpileOnly": true
+	}
+```
+
+#### managed client
+
+### edge connectivity
+
+##### reflect meta data (script)
+
+vite.config.ts
+
+```ts
+import { copyFileSync, mkdirSync } from "node:fs"
+import { resolve } from "node:path"
+
+{
+			name: "copy-reflect-metadata",
+			generateBundle() {
+				const srcPath = resolve("node_modules/reflect-metadata/Reflect.js")
+				const destDir = resolve("build/client/assets")
+				const destPath = resolve(destDir, "reflect-metadata.js")
+
+				try {
+					mkdirSync(destDir, { recursive: true })
+					copyFileSync(srcPath, destPath)
+					// console.log("✓ Copied reflect-metadata to assets")
+				} catch {
+					// console.warn("Failed to copy reflect-metadata")
+				}
+			},
+		},
+```
+
+tsconfig.json
+
+```json
+	"types": ["vitest/globals", "@vitest/browser/providers/playwright", "reflect-metadata"],
+```
+
+
+index.ts
+
+- not import "reflect-metadata"
+
+
+root.tsx
+
+```ts
+
+	const { lang, clientEnv } = loaderData
+	useChangeLanguage(lang)
+	return (
+		<>
+			<Outlet />
+			<script>{`window.env = ${JSON.stringify(clientEnv)}`}</script>
+		</>
+	)
+}
+import "reflect-metadata"
+```
+
+context.ts
+
+```ts
+body: (ctx as any).body, //?
+```
+
+
+##### client back off strategy
+
+entities\Node.ts
+
+- not a type
+
+```ts
+import { , ObjectId,  } from "@mikro-orm/mongodb"
+
+@Entity()
+export abstract class Node {
+	@PrimaryKey()
+	@PrimaryKey({ type: ObjectId })
+```
+
+db\subscribers.ts
+
+```ts
+
+```
+
+congif\base.ts
+
+```ts
+
+import { MongoDriver } from "@mikro-orm/mongodb"
+import appConfig from "../../config"
+
+const { orm } = appConfig
+const config = defineConfig({
+
+	driver: MongoDriver,
+
+class ConnectionManager {
+	private async handleConnectionError(error: Error) {
+		if (this.isRetryableError(error)) {
+			await this.reconnect({
+				maxRetries: 3,
+				backoffStrategy: "exponential",
+			})
+		} else {
+			throw new DatabaseConnectionError(error)
+		}
+	}
+
+	private isRetryableError(error: Error): boolean {
+		return ["PROTOCOL_CONNECTION_LOST", "ER_CON_COUNT_ERROR"].includes(error.message)
+	}
+}
+```
+
+config\retry.ts
+
+```ts
+import { MikroORM } from "@mikro-orm/core"
+
+class ConnectionManager {
+	private orm: MikroORM | null = null
+
+	async connect(config) {
+		try {
+			this.orm = await MikroORM.init(config)
+			console.log("Connected to DB")
+		} catch (error) {
+			await this.handleConnectionError(error)
+		}
+	}
+
+	private async handleConnectionError(error: Error) {
+		if (this.isRetryableError(error)) {
+			console.log("Retrying connection...")
+			await this.reconnect({ maxRetries: 3, backoffStrategy: "exponential" })
+		} else {
+			throw new Error(`DatabaseConnectionError: ${error.message}`)
+		}
+	}
+
+	private isRetryableError(error: Error): boolean {
+		// Add or customise error codes that are retryable
+		return ["PROTOCOL_CONNECTION_LOST", "ER_CON_COUNT_ERROR"].some((msg) => error.message.includes(msg))
+	}
+
+	private async reconnect(options: { maxRetries: number; backoffStrategy: string }) {
+		let attempts = 0
+		const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+		while (attempts < options.maxRetries) {
+			attempts++
+			try {
+				this.orm = await MikroORM.init(config)
+				console.log("Reconnected to DB")
+				return
+			} catch (error) {
+				console.log(`Reconnect attempt ${attempts} failed:`, error.message)
+				const backoff = options.backoffStrategy === "exponential" ? 2 ** attempts * 1000 : 1000
+				await delay(backoff)
+			}
+		}
+
+		throw new Error("Max reconnect attempts reached")
+	}
+
+	async disconnect() {
+		if (this.orm) {
+			await this.orm.close(true)
+		}
+	}
+
+	getEntityManager() {
+		if (!this.orm) throw new Error("Not connected")
+		return this.orm.em
+	}
+}
+```
+
+db/startup.ts
+
+```ts
+import { MikroORM } from "@mikro-orm/core"
+
+async function initializeORM() {
+	const advancedConfig = {
+		// Automatically create database schema
+		migrations: {
+			tableName: "mikro_orm_migrations",
+			path: "./migrations",
+			transactional: true,
+			allOrNothing: true,
+		},
+		// Entity discovery and loading
+		entities: ["./dist/entities"],
+		entitiesTs: ["./src/entities"],
+		// Cache configuration
+		cache: {
+			enabled: true,
+			options: {
+				expiration: 3600,
+				prefix: "my-app-cache:",
+			},
+		},
+		// Query logging and debugging
+		// logger: console.log.bind(console),
+		debug: true,
+		// Connection retry settings
+		retry: {
+			count: 3,
+			delay: 1000,
+			factor: 2,
+		},
+	}
+
+	try {
+		const orm = await MikroORM.init(advancedConfig)
+
+		// Register shutdown handlers
+		process.on("SIGINT", async () => {
+			await orm.close()
+			process.exit(0)
+		})
+
+		return orm
+	} catch (error) {
+		// console.error("Failed to connect to database:", error)
+		throw error
+	}
+}
+await initializeORM()
+```
+
+##### dependence generate back (load schema)
+
+check-deps.js
+
+```js
+const checkDependencies = () => {
+	const requiredDeps = ["@mikro-orm/core", "@mikro-orm/migrations", "typescript"]
+
+	const pkg = import("./package.json")
+	const missing = requiredDeps.filter(
+		(dep) => !((pkg.dependencies && pkg.dependencies[dep]) || (pkg.devDependencies && pkg.devDependencies[dep]))
+	)
+
+	if (missing.length > 0) {
+		throw new Error(`Missing dependencies: ${missing.join(", ")}`)
+	}
+	// console.log("All required dependencies are present!")
+}
+checkDependencies()
+```
+
+packag.json
+
+```json
+"build-base": "react-router build",
+		"dev": "react-router dev",
+		"start-base": "NODE_ENV=production node ./build/server/index.js",
+		"build": "react-router build && vite -c vite.mikro-orm.config.ts build",
+		"start": "NODE_ENV=production node ./build/server/index.js",
+	"mikro-orm": "mikro-orm",
+		"schema:create": "mikro-orm schema:create -r",
+		"schema:update": "mikro-orm schema:update -r",
+		"migration:create": "mikro-orm migration:create",
+		"migration:up": "mikro-orm migration:up",
+		"migration:down": "mikro-orm migration:down"
+```
+
+MaybeNull.test.ts
+
+```ts
+@@ -0,0 +1,7 @@
+import { expectTypeOf, test } from "vitest"
+
+import type { MaybeNull } from "../../../../app/lib/types/MaybeNull.ts"
+
+test("creates nullable for given type parameter", () => {
+	expectTypeOf<MaybeNull<number>>().toEqualTypeOf<number | null>()
+})
+```
+
+adminAuthLoader.ts
+
+
+```ts
+import { expectTypeOf, test } from "vitest"
+
+import type { MaybeNull } from "../../../../app/lib/types/MaybeNull.ts"
+
+test("creates nullable for given type parameter", () => {
+	expectTypeOf<MaybeNull<number>>().toEqualTypeOf<number | null>()
+})
+```
+
+zod\config\test.ts
+
+```ts
+import { describe, expect, it } from "vitest" // or jest
+import { Config } from "../zod/Confg"
+
+describe("Config schema", () => {
+	it("successfully validates valid config", () => {
+		const validInput = {
+			app: {
+				// provide valid properties expected by App schema
+			},
+			server: {
+				// valid properties for Server
+			},
+			orm: {
+				// valid properties for Orm
+			},
+			auth: {
+				// valid properties for Auth
+			},
+		}
+
+		const parseResult = Config.safeParse(validInput)
+		expect(parseResult.success).toBe(true)
+		if (parseResult.success) {
+			expect(Object.isFrozen(parseResult.data)).toBe(true)
+			// Optionally test specific fields
+			expect(parseResult.data.app).toEqual(validInput.app)
+		}
+	})
+
+	it("fails to validate invalid config", () => {
+		const invalidInput = {
+			app: {}, // missing required properties
+			server: null,
+			orm: {},
+			auth: {},
+		}
+
+		const parseResult = Config.safeParse(invalidInput)
+		expect(parseResult.success).toBe(false)
+		if (!parseResult.success) {
+			// Inspect errors if needed
+			expect(parseResult.error.flatten().fieldErrors).toHaveProperty("app")
+		}
+	})
+})
 ```
