@@ -3,6 +3,7 @@
 ##
 1. cross container
 - first entry dev dependencies
+- discover
 2. identity map, decorators
 -
 3. singlaton
@@ -1968,4 +1969,38 @@ describe("Config schema", () => {
 		}
 	})
 })
+```
+
+#### complete reflection
+
+$ npx mikro-orm debug --config ./my-config.ts
+
+fallow@Fallow:~/base-stack$  npx mikro-orm debug --config ./my-config.ts
+Current MikroORM CLI configuration
+ - dependencies:
+   - mikro-orm 6.5.7
+   - node 20.19.5
+   - typescript 5.9.2
+ - package.json found
+ - ts-node enabled
+ - searched config paths:
+   - /home/fallow/base-stack/my-config.ts (not found)
+ - searched for config name: default
+- configuration not found (MikroORM config file not found in ['./my-config.ts'])
+
+```ts
+import { TsMorphMetadataProvider } from "@mikro-orm/reflection"
+
+// const base = join(process.cwd(), "app", "server", "db")
+
+const config = defineConfig({
+	...orm,
+
+	metadataProvider: TsMorphMetadataProvider,
+
+	discovery: {
+		warnWhenNoEntities: false, // by default, discovery throws when no entity is processed
+		requireEntitiesArray: true, // force usage of class references in `entities` instead of paths
+		alwaysAnalyseProperties: false, // do not analyse properties when not needed (with ts-morph)
+	},
 ```

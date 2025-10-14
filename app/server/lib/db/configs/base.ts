@@ -11,13 +11,16 @@ import appConfig from "../../config"
 
 const { orm } = appConfig
 
+import { TsMorphMetadataProvider } from "@mikro-orm/reflection"
+
 // const base = join(process.cwd(), "app", "server", "db")
 
 const config = defineConfig({
 	...orm,
-
+	metadataProvider: TsMorphMetadataProvider,
 	// ensureDatabase: true,
 	driver: MongoDriver,
+	driverOptions: { connection: { timezone: "+02:00" } },
 	dbName: "my-db-name",
 	entities: Object.values(entities),
 	clientUrl: "mongodb://localhost:27017", //process.env.MONGO_URL_LOCAL || process.env.MONGO_URL ||
@@ -27,23 +30,28 @@ const config = defineConfig({
 	// migrations: {
 	// 	path: join(base, "migrations"),
 	// },
+	discovery: {
+		warnWhenNoEntities: false, // by default, discovery throws when no entity is processed
+		requireEntitiesArray: true, // force usage of class references in `entities` instead of paths
+		alwaysAnalyseProperties: false, // do not analyse properties when not needed (with ts-morph)
+	},
 })
 
 export default config
 
-class ConnectionManager {
-	private async handleConnectionError(error: Error) {
-		if (this.isRetryableError(error)) {
-			await this.reconnect({
-				maxRetries: 3,
-				backoffStrategy: "exponential",
-			})
-		} else {
-			throw new DatabaseConnectionError(error)
-		}
-	}
+// class ConnectionManager {
+// 	private async handleConnectionError(error: Error) {
+// 		if (this.isRetryableError(error)) {
+// 			await this.reconnect({
+// 				maxRetries: 3,
+// 				backoffStrategy: "exponential",
+// 			})
+// 		} else {
+// 			throw new DatabaseConnectionError(error)
+// 		}
+// 	}
 
-	private isRetryableError(error: Error): boolean {
-		return ["PROTOCOL_CONNECTION_LOST", "ER_CON_COUNT_ERROR"].includes(error.message)
-	}
-}
+// 	private isRetryableError(error: Error): boolean {
+// 		return ["PROTOCOL_CONNECTION_LOST", "ER_CON_COUNT_ERROR"].includes(error.message)
+// 	}
+// }

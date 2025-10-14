@@ -16,6 +16,7 @@ import { Config, type IConfig } from "./zod/Confg"
 // 	PORT: z.string().optional(), // usually env vars are strings, parse to number if needed
 // })
 export const envSchema = z.object({
+	//primary instance
 	NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 	PORT: z.string().optional(),
 	DB_NAME: z.string().nonempty(),
@@ -25,11 +26,12 @@ export const envSchema = z.object({
 	DB_PORT: z.string().optional(),
 	MONGO_URL: z.string().optional(),
 	MONGO_URL_LOCAL: z.string().optional(),
-	AUTH_COOKIE_PREFIX: z.string().optional(),
 	MONGODB_USER: z.string().optional(),
 	MONGODB_PASSWORD: z.string().optional(),
 	MONGODB_DATABASE: z.string().optional(),
 	MONGODB_OPTIONS: z.string().optional(),
+	//issuer plugin
+	AUTH_COOKIE_PREFIX: z.string().optional(),
 	AUTH_SECRET: z.string().nonempty(),
 	ISSUER: z.string().nonempty(),
 	CLIENT_ID: z.string().nonempty(),
@@ -38,6 +40,7 @@ export const envSchema = z.object({
 	RESOURCE_HOST: z.string().nonempty(),
 	ISSUER_HOST: z.string().nonempty(),
 	AUDIENCE: z.string().nonempty(),
+	//deployment
 	APP_DEPLOYMENT_ENV: z.string().optional(),
 	BLOG_NAME: z.string().nonempty(),
 })
