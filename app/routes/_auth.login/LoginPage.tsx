@@ -30,14 +30,14 @@ const AdminLoginPage: FC<Route.ComponentProps> = ({ actionData }) => {
 		if (response?.error) {
 			toast.error("Can't log in")
 		} else {
-			await navigate("/admin", { replace: true })
+			await navigate("/home", { replace: true })
 		}
 	})
 	return (
 		<Form
 			{...getFormProps(form)}
 			method="post"
-			action="/admin/login"
+			action="/_auth/login"
 			className="flex h-full w-full items-center justify-center p-4"
 		>
 			<Card className="mx-auto flex h-full w-full flex-col items-center justify-center gap-4 lg:w-2/3">
