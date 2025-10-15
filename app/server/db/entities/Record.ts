@@ -1,10 +1,12 @@
-import { Index, type Opt, Property } from "@mikro-orm/mongodb"
+import { Entity, Index, type Opt, Property } from "@mikro-orm/mongodb"
 
 import { Node } from "./Node"
 
 /**
  * Represents abstract base database entity with comman dates
  */
+
+@Entity({ abstract: true })
 export abstract class Record extends Node {
 	/**
 	 * The date and time the entity is created

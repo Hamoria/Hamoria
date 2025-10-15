@@ -3,7 +3,7 @@
 
 import { Entity, ObjectId, PrimaryKey, SerializedPrimaryKey } from "@mikro-orm/mongodb"
 
-@Entity()
+@Entity({ abstract: true })
 export abstract class Node {
 	@PrimaryKey({ type: ObjectId })
 	_id!: ObjectId

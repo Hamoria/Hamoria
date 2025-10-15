@@ -308,4 +308,292 @@ export const action = ({ request }: Route.ActionArgs) => auth.handler(request)
 ```
 
 
-#### pass key ba%
+#### pass key null consideration, models
+
+Maybe.ts
+
+```ts
+import type { MaybeNull } from "./MaybeNull.ts"
+import type { MaybeUndefined } from "./MaybeUndefined.ts"
+
+export type Maybe<T> = MaybeNull<T> | MaybeUndefined<T>
+```
+
+MaybeUndefined.ts
+
+```ts
+export type MaybeUndefined<T> = T | undefined
+```
+
+Account.ts
+
+```ts
+import { Entity, ManyToOne, type Opt, Property } from "@mikro-orm/mongodb"
+
+import type { Maybe } from "~/lib/types/Maybe"
+
+import { Record } from "./Record"
+import { User } from "./User"
+
+@Entity()
+export class Account extends Record {
+	/**
+	 * The id of the account as provided by the SSO or equal to userId for credential accounts
+	 */
+	@Property<Account>({ type: "string" })
+	accountId!: string
+
+	/**
+	 * The id of the provider
+	 */
+	@Property<Account>({ type: "string" })
+	providerId!: string
+
+	/**
+	 * The access token of the account.
+	 * Returned by the provider
+	 */
+	@Property<Account>({ type: "string", nullable: true, default: null })
+	accessToken?: Maybe<Opt<string>>
+
+	/**
+	 * The refresh token of the account.
+	 * Returned by the provider
+	 */
+	@Property<Account>({ type: "string", nullable: true, default: null })
+	refreshToken?: Maybe<Opt<string>>
+
+	/**
+	 * The time when the verification request expires
+	 */
+	@Property<Account>({ type: "datetime", nullable: true, default: null })
+	accessTokenExpiresAt?: Maybe<Opt<Date>>
+
+	/**
+	 * The time when the verification request expires
+	 */
+	@Property<Account>({ type: "datetime", nullable: true, default: null })
+	refreshTokenExpiresAt?: Maybe<Opt<Date>>
+
+	/**
+	 * The scope of the account. Returned by the provider
+	 */
+	@Property<Account>({ type: "string", nullable: true, default: null })
+	scope?: Maybe<Opt<string>>
+
+	/**
+	 * The password of the account.
+	 * Mainly used for email and password authentication
+	 */
+	@Property<Account>({ type: "string", nullable: true, default: null })
+	password?: Maybe<Opt<string>>
+
+	/**
+	 * User associated with the account
+	 */
+	@ManyToOne(() => User, { eager: true })
+	user!: User
+}
+```
+
+Passkey.ts
+
+```ts
+import { Entity, ManyToOne, Property } from "@mikro-orm/mongodb"
+
+import { Record } from "./Record"
+import { User } from "./User"
+
+@Entity()
+export class Passkey extends Record {
+	/**
+	 * The name of the passkey
+	 */
+	@Property({ type: "string", nullable: true, default: null })
+	name?: string
+
+	/**
+	 * The public key of the passkey
+	 */
+	@Property({ type: "string" })
+	publicKey!: string
+
+	/**
+	 * The unique identifier of the registered credential
+	 */
+	@Property({ type: "string" })
+	credentialID!: string
+
+	/**
+	 * The counter of the passkey
+	 */
+	@Property({ type: "integer", unsigned: true, default: 0 })
+	counter!: number
+
+	/**
+	 * The type of device used to register the passkey
+	 */
+	@Property({ type: "string" })
+	deviceType!: string
+
+	/**
+	 * Whether the passkey is backed up
+	 */
+	@Property({ type: "boolean" })
+	backedUp!: boolean
+
+	/**
+	 * The transports used to register the passkey
+	 */
+	@Property({ type: "string" })
+	transports!: string
+
+	/**
+	 * Authenticator's Attestation GUID indicating the type of the authenticator
+	 */
+	@Property({ type: "string", nullable: true })
+	aaguid?: string
+
+	/**
+	 * The user associated with the passkey
+	 */
+	@ManyToOne(() => User, { eager: true })
+	user!: string
+}
+```
+
+Session.ts
+
+```ts
+import { Entity, ManyToOne, Property, Unique } from "@mikro-orm/mongodb"
+import type { Session as SessionSchema } from "better-auth"
+
+import type { Maybe } from "../../../lib/types/Maybe.ts"
+
+import { Record } from "./Record"
+import { User } from "./User"
+
+export interface DatabaseSession extends Omit<SessionSchema, "userId"> {}
+
+/**
+ * Represents a session stored in a database
+ */
+@Entity()
+export class Session extends Record implements DatabaseSession {
+	@Property<Session>({ type: "string" })
+	@Unique()
+	token!: string
+
+	/**
+	 * Date a time of session expiration
+	 */
+	@Property<Session>({ type: "datetime" })
+	expiresAt!: Date
+
+	/**
+	 * The IP address of the device
+	 */
+	@Property<Session>({ type: "string", nullable: true, default: null })
+	ipAddress?: Maybe<string> = null
+
+	/**
+	 * The user agent information of the device
+	 */
+	@Property<Session>({ type: "string", nullable: true, default: null })
+	userAgent?: Maybe<string> = null
+
+	/**
+	 * User associated with the sesssion
+	 */
+	@ManyToOne(() => User, { eager: true })
+	user!: User
+}
+```
+
+Verification.ts
+
+```ts
+import { Entity, Property } from "@mikro-orm/mongodb"
+
+import { Record } from "./Record"
+
+@Entity()
+export class Verification extends Record {
+	/**
+	 * Unique identifier for each verification
+	 */
+	@Property<Verification>({ type: "string" })
+	identifier!: string
+
+	/**
+	 * The value to be verified
+	 */
+	@Property<Verification>({ type: "string" })
+	value!: string
+
+	/**
+	 * The time when the verification request expires
+	 */
+	@Property<Verification>({ type: "datetime" })
+	expiresAt!: Date
+}
+```
+
+#### note micro orm manage auth
+
+- installation guide
+
+```sh
+npx @better-auth/cli generate
+npx @better-auth/cli migrate
+```
+
+
+fallow@Fallow:~/base-stack$ npx @better-auth/cli generate --config app/server/lib/auth.ts
+2025-10-15T06:42:41.952Z ERROR [Better Auth]: [#better-auth]: Couldn't read your auth config in /home/fallow/base-stack/app/server/lib/auth.ts. Make sure to default export your auth instance or to export as a variable named auth.
+
+-  dont cli https://www.jsdelivr.com/package/npm/better-auth-mikro-orm
+
+
+LoginPage.tsx
+
+```ts
+
+		<Form
+...
+			action="/_auth/login"
+```
+
+_index.tsx
+
+```ts
+
+```
+
+entries.ts
+
+```ts
+export { Account } from "./entities/Account"
+export { Passkey } from "./entities/Passkey"
+export { Session } from "./entities/Sessions"
+export { User } from "./entities/User"
+export { Verification } from "./entities/Verification"
+```
+
+Node.ts
+
+```ts
+@Entity({ abstract: true })
+```
+
+Record.ts
+
+```ts
+@Entity({ abstract: true })
+```
+
+tsconfig.json
+
+```json
+		"useDefineForClassFields": false,
+```
