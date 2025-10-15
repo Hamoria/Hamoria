@@ -1,6 +1,7 @@
 import { MongoDriver, type Options } from "@mikro-orm/mongodb"
 import { TsMorphMetadataProvider } from "@mikro-orm/reflection"
 
+//for cli tools tho Generated an empty chunk: "mikro-orm.config".
 const config: Options = {
 	// for simplicity, we use the SQLite database, as it's available pretty much everywhere
 	driver: MongoDriver,

@@ -597,3 +597,63 @@ tsconfig.json
 ```json
 		"useDefineForClassFields": false,
 ```
+
+####
+
+```ts
+
+```
+
+app/components/ui/sidebar.tsx (1:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+✓ 118 modules transformed.
+✗ Build failed in 3.91s
+[babel-plugin] /home/fallow/base-stack/app/server/db/entities/Account.ts: Support for the experimental syntax 'decorators' isn't currently enabled (8:1):
+
+   6 | import { User } from "./User"
+   7 |
+>  8 | @Entity()
+     | ^
+   9 | export class Account extends Record {
+  10 |  /**
+  11 |   * The id of the account as provided by the SSO or equal to userId for credential accounts
+
+Add @babel/plugin-proposal-decorators (https://github.com/babel/babel/tree/main/packages/babel-plugin-proposal-decorators)
+
+
+-
+
+ yarn add -D babel-plugin-transform-typescript-metadata @babel/plugin-proposal-decorators @babel/plugin-proposal-class-properties
+
+Lastly we need to set the BABEL_DECORATORS_COMPAT environment variable to true
+
+
+pnpm add -D babel-plugin-transform-typescript-metadata @babel/plugin-proposal-decorators @babel/plugin-proposal-class-properties
+
+
+```sh
+pnpm add -D babel-plugin-transform-typescript-metadata @babel/plugin-proposal-decorators @babel/plugin-proposal-class-properties
+```
+
+vite.config.ts
+
+```ts
+import tsconfigPaths from "vite-tsconfig-paths"
+export default defineConfig({
+	plugins: [
+		tailwindcss(),
+		// Run the react-compiler on .tsx files only when bundling
+		{
+			...babel({
+				filter: /\.tsx?$/,
+				babelConfig: {
+					presets: ["@babel/preset-typescript"],
+					plugins: [
+						"babel-plugin-react-compiler",
+						["@babel/plugin-proposal-decorators", { legacy: true }],
+						["@babel/plugin-proposal-class-properties", { loose: true }],
+					],
+				},
+			}),
+			apply: "build",
+		},
+```

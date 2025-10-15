@@ -18,7 +18,11 @@ export default defineConfig({
 				filter: /\.tsx?$/,
 				babelConfig: {
 					presets: ["@babel/preset-typescript"],
-					plugins: ["babel-plugin-react-compiler"],
+					plugins: [
+						"babel-plugin-react-compiler",
+						["@babel/plugin-proposal-decorators", { legacy: true }],
+						["@babel/plugin-proposal-class-properties", { loose: true }],
+					],
 				},
 			}),
 			apply: "build",
