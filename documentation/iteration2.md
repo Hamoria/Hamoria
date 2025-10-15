@@ -409,7 +409,7 @@ server\lib\config.ts
 
 ```ts
 import "./env.js"
-import { z } from "zod"
+import { z } from "zod/v4" //not /v4
 import { Config, type IConfig } from "./zod/Confg"
 
 const envSchema = z.object({

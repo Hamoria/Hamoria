@@ -96,7 +96,7 @@
 		"rollup-plugin-swc": "0.2.1",
 		"sonner": "2.0.7",
 		"tailwind-merge": "3.3.1",
-		"zod": "4.1.12"
+		"zod": "3.25.76"
 	},
 	"devDependencies": {
 		"@babel/plugin-proposal-decorators": "7.28.0",

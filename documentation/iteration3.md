@@ -2,9 +2,9 @@
 
 ##
 
-###
+### rolebased authentication
 
-####
+#### type safe
 
 ```sh
 pnpm add @conform-to/react
@@ -308,6 +308,8 @@ export const action = ({ request }: Route.ActionArgs) => auth.handler(request)
 ```
 
 
+### compose authorized client
+
 #### pass key null consideration, models
 
 Maybe.ts
@@ -598,7 +600,7 @@ tsconfig.json
 		"useDefineForClassFields": false,
 ```
 
-####
+#### entity and transpilation of  build
 
 ```ts
 
@@ -657,3 +659,371 @@ export default defineConfig({
 			apply: "build",
 		},
 ```
+
+
+4:36:03 PM [vite] Internal server error: The requested module 'zod' does not provide an export named 'ZodBranded'
+      at ModuleJob
+zod/v4
+			https://github.com/colinhacks/zod/issues/4371
+
+
+### session view
+
+#### auth context api call
+
+LoginPage.tsx
+
+```tsx
+import { AdminLogInInput } from "~/server/zod/admin/AdminLogInInput"
+const [form, fields] = useForm({
+		lastResult: actionData,
+	constraint: getZodConstraint(AdminLogInInput as unknown as any),
+
+```
+
+
+route.tsx
+
+```tsx
+import type { LoaderFunctionArgs } from "react-router" //ActionFunctionArgs
+import { getSession } from "~/middlewares/session"
+
+import { parseWithZod } from "@conform-to/zod"
+import { APIError } from "better-auth"
+import { data, replace } from "react-router"
+import { authContext } from "~/server/contexts/auth.js"
+import { AdminLogInInput } from "~/server/zod/admin/AdminLogInInput"
+export const action = async ({ request, context }: Route.ActionArgs) => {
+	const auth = context.get(authContext)
+
+
+	const submission = await parseWithZod(await request.formData(), {
+		schema: AdminLogInInput,
+		async: true,
+	})
+
+	if (submission.status !== "success") {
+		return data(submission.reply(), 422)
+	}
+
+	try {
+		const response = await auth.api.signInEmail({
+			asResponse: true,
+			body: submission.value,
+		})
+
+		throw replace("/admin", {
+			headers: response.headers,
+		})
+	} catch (error) {
+		if (!(error instanceof APIError)) {
+			throw error
+		}
+
+		if (error.body?.code === "INVALID_EMAIL_OR_PASSWORD") {
+			return data(
+				submission.reply({
+					formErrors: ["Invalid email or password"],
+				}),
+
+				{
+					status: 401,
+				}
+			)
+		}
+
+		if (error.body?.code === "INVALID_EMAIL") {
+			return data(
+				submission.reply({
+					fieldErrors: {
+						email: ["Invalid email"],
+					},
+				}),
+
+				{
+					status: 422,
+				}
+			)
+		}
+
+		throw error
+	}
+}
+
+import type { Route } from "./+types/route"
+import { ADMIN_LOGIN_PAGE_TITLE } from "./title"
+export const meta: Route.MetaFunction = () => [
+	{
+		title: ADMIN_LOGIN_PAGE_TITLE,
+	},
+]
+
+```
+
+
+title.ts
+
+```ts
+export const ADMIN_LOGIN_PAGE_TITLE = "Login"
+```
+
+#### top level window
+
+contexts\admin.ts
+
+```ts
+import type { AdminViewer } from "../lib/admin/AdminArgs"
+export const adminContext = createContext<AdminViewer>()
+```
+
+
+
+
+
+
+IsAny.ts
+
+```ts
+export type IsAny<T> = 0 extends 1 & T ? true : false
+
+```
+
+\lib\admin\AdminArgs.ts
+
+```ts
+import type { Session as DatabaseSession, User as DatabaseUser } from "better-auth"
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router"
+
+import type { IsAny } from "~/lib/types/IsAny"
+import type { Replace } from "~/server/lib/types/Replace.ts"
+import type { Session, User } from "../../db/entities.ts"
+import type { Variables } from "../../index"
+
+export interface AdminViewer {
+	/**
+	 * A **reference** to the current user.
+	 *
+	 * This will only have an `id` field if user is not loaded yet.
+	 */
+	user: User
+
+	/**
+	 * A **reference** to the current session.
+	 *
+	 * This will only have an `id` field if session is not loaded yet.
+	 */
+	session: Session
+
+	/**
+	 * Raw user returned by Better Auth.
+	 *
+	 * This object does not include relations.
+	 */
+	rawUser: DatabaseUser
+
+	/**
+	 * Raw user returned by Better Auth.
+	 *
+	 * This object does not include relations.
+	 */
+	rawSession: DatabaseSession
+}
+
+export interface AdminViewerContext {
+	viewer: AdminViewer
+}
+
+export type AdminArgs<TEvent extends LoaderFunctionArgs | ActionFunctionArgs> = Replace<
+	TEvent,
+	{
+		context: Variables &
+			(IsAny<TEvent["context"]> extends true ? AdminViewerContext : NonNullable<TEvent["context"]> & AdminViewerContext)
+	}
+>
+```
+
+
+adminLoaderError.ts
+
+```ts
+mport { data, type ErrorResponse, isRouteErrorResponse } from "react-router"
+
+export enum AdminLoaderErrorCode {
+	SETUP = 0,
+	LOGIN = 1,
+}
+
+export interface AdminLoaderErrorData {
+	type: "admin"
+	code: AdminLoaderErrorCode
+}
+
+export interface AdminLoaderError extends ErrorResponse {
+	data: AdminLoaderErrorData
+}
+
+/**
+ * Checks if given `error` is of AdminLoaderError type
+ */
+export const isAdminLoaderError = (error: unknown): error is AdminLoaderError =>
+	isRouteErrorResponse(error) &&
+	typeof error.data === "object" &&
+	error.data !== null &&
+	!Array.isArray(error.data) &&
+	error.data.type === "admin" &&
+	"code" in error.data
+
+/**
+ * Creates admin loader error
+ */
+export function createAdminLoaderError(code: AdminLoaderErrorCode): never {
+	throw data({ type: "admin", code } satisfies AdminLoaderErrorData, {
+		status: 401,
+	})
+}
+```
+
+#### session in current layout serialized ctx
+
+
+admin\withAdmin.ts
+
+```ts
+import type { Session as DatabaseSession, User as DatabaseUser } from "better-auth"
+import { adminContext } from "../../contexts/admin.js"
+import { authContext } from "../../contexts/auth.js"
+import { ormContext } from "../../contexts/orm.js"
+import { resHeadersContext } from "../../contexts/resHeaders.js"
+import { Session, User } from "../../db/entities.js"
+import type { Action, ActionArgs } from "../types/Action"
+import type { Loader, LoaderArgs } from "../types/Loader"
+
+import { AdminLoaderErrorCode, createAdminLoaderError } from "./adminLoaderError"
+
+/**
+ * Defines protected admin loader/action for given function.
+ *
+ * This decorator wraps a `loader` or `action` function and checks if:
+ *  * there's admin user - otherwise the visitor will be prompted to admin account setup;
+ *  * whether the visitor is authenticated - otherwise the visitor will be prompted into the login form;
+ *
+ * @param loader - a function to wrap into admin priviligies checks
+ */
+export const withAdmin =
+	<TResult, TArgs extends LoaderArgs | ActionArgs>(fn: Loader<TResult, TArgs> | Action<TResult, TArgs>) =>
+	async (args: TArgs): Promise<TResult> => {
+		const orm = args.context.get(ormContext)
+		const auth = args.context.get(authContext)
+		const resHeaders = args.context.get(resHeadersContext)
+
+		const [admin] = await orm.em.find(
+			User,
+
+			{},
+
+			{
+				limit: 1,
+				offset: 0,
+				orderBy: {
+					createdAt: "asc",
+				},
+			}
+		)
+
+		if (!admin) {
+			createAdminLoaderError(AdminLoaderErrorCode.SETUP)
+		}
+
+		const response = await auth.api.getSession({
+			asResponse: true,
+			headers: args.request.headers,
+		})
+
+		// Note: in the actual result all Dates are serialized into string, so make sure to de-serialize them back
+		const result = (await response.json()) as {
+			user: DatabaseUser
+			session: DatabaseSession
+		}
+
+		if (!result?.session) {
+			createAdminLoaderError(AdminLoaderErrorCode.LOGIN)
+		}
+
+		const session = await orm.em
+			.getReference(Session, result.session.id, {
+				wrapped: true,
+			})
+			.loadOrFail()
+
+		args.context.set(adminContext, {
+			session,
+			user: session.user,
+			rawUser: result.user,
+			rawSession: result.session,
+		})
+
+		try {
+			return await fn(args)
+		} finally {
+			const cookie = response.headers.get("set-cookie")
+
+			if (cookie) {
+				resHeaders.set("set-cookie", cookie)
+			}
+		}
+	}
+```
+
+
+#### execution ctx
+
+types\->
+
+Action.ts
+
+```ts
+import type { ActionFunctionArgs, RouterContextProvider } from "react-router"
+
+import type { Replace } from "./Replace"
+
+export type ActionArgs = Replace<
+	ActionFunctionArgs,
+	{
+		context: RouterContextProvider
+	}
+>
+
+export type Action<TResult, TArgs extends ActionArgs> = (args: TArgs) => Promise<TResult>
+```
+
+Loader.ts
+
+```ts
+import type { LoaderFunctionArgs, RouterContextProvider } from "react-router"
+
+import type { Replace } from "./Replace.js"
+
+export type LoaderArgs = Replace<
+	LoaderFunctionArgs,
+	{
+		context: RouterContextProvider
+	}
+>
+
+export type Loader<TResult, TArgs extends LoaderArgs> = (args: TArgs) => Promise<TResult>
+```
+
+Replace.ts
+
+```ts
+export type Replace<T extends Record<PropertyKey, any>, U extends Record<PropertyKey, any>> = Omit<T, keyof U> & U
+```
+
+
+package.json
+
+```json
+"zod": "3.25.76"
+```
+
+###

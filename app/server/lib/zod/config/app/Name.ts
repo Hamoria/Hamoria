@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod/v4"
 
 export const Name = z.string().trim().min(1).optional().default("Eri's Blog")
 

@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod/v4"
 
 export const NodeEnv = z.union([z.literal("development"), z.literal("production"), z.literal("test")])
 

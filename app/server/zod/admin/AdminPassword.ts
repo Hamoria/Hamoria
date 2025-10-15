@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod/v4"
 
 export const AdminPassword = z.string().min(8, "Password must be at least 8 characters long")
 

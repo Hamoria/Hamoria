@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import type { MetaFunction } from "react-router"
 import { redirect } from "react-router"
-import { convertDateToUserTz } from "~/utils/dates"
+// import { convertDateToUserTz } from "~/utils/dates"
 import type { Route } from "./+types/_index"
 
 export const meta: MetaFunction = () => {
@@ -9,7 +9,7 @@ export const meta: MetaFunction = () => {
 }
 
 export const loader = ({ request }: Route.LoaderArgs) => {
-	const timezoneDate = convertDateToUserTz(new Date(), request)
+	// const timezoneDate = convertDateToUserTz(new Date(), request)
 
 	// const userId = await requireUserId(request)
 	const user = "user"
@@ -22,9 +22,9 @@ export const loader = ({ request }: Route.LoaderArgs) => {
 	}
 
 	throw redirect("/home")
-	return {
-		timezoneDate: timezoneDate.toTimeString(),
-	}
+	// return {
+	// 	timezoneDate: timezoneDate.toTimeString(),
+	// }
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
