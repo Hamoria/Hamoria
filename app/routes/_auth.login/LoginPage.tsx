@@ -11,13 +11,13 @@ import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
 import { Separator } from "~/components/ui/separator"
 import { authClient } from "~/lib/auth"
+import { AdminLogInInput } from "~/server/zod/admin/AdminLogInInput"
 import type { Route } from "./+types/route.ts"
-import { AdminLogInInput } from "./admin/AdminLogInInput"
 
 const AdminLoginPage: FC<Route.ComponentProps> = ({ actionData }) => {
 	const [form, fields] = useForm({
 		lastResult: actionData,
-		constraint: getZodConstraint(AdminLogInInput),
+		constraint: getZodConstraint(AdminLogInInput as unknown as any),
 
 		onValidate: ({ formData }) => parseWithZod(formData, { schema: AdminLogInInput as unknown as any }),
 	})
@@ -37,7 +37,7 @@ const AdminLoginPage: FC<Route.ComponentProps> = ({ actionData }) => {
 		<Form
 			{...getFormProps(form)}
 			method="post"
-			action="/_auth/login"
+			action="/login"
 			className="flex h-full w-full items-center justify-center p-4"
 		>
 			<Card className="mx-auto flex h-full w-full flex-col items-center justify-center gap-4 lg:w-2/3">
