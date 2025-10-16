@@ -70,14 +70,14 @@ const config = Config.parse({
 	server: {
 		port: env.PORT || undefined,
 	},
-	orm: {
-		// debug: process.env.NODE_ENV,
-		dbName: env.DB_NAME,
-		host: env.DB_HOST || undefined,
-		port: env.DB_PORT || undefined,
-		user: env.DB_USER,
-		password: env.DB_PASSWORD,
-	},
+	// orm: {
+	// 	// debug: process.env.NODE_ENV,
+	// 	dbName: env.DB_NAME,
+	// 	host: env.DB_HOST || undefined,
+	// 	port: env.DB_PORT || undefined,
+	// 	user: env.DB_USER,
+	// 	password: env.DB_PASSWORD,
+	// },
 } satisfies IConfig)
 
 export default config

@@ -1027,3 +1027,244 @@ package.json
 ```
 
 ###
+
+#### orm problems on action
+
+##### data strategy
+
+ERROR routes/_auth.login/route threw an error!
+ERROR Mongo driver does not support `host` options, use `clientUrl` instead!
+DriverException: Mongo driver does not support `host` options, use `clientUrl` instead!
+    at MongoExceptionConverter.convertException (/home/fallow/base-stack/node_modules/.pnpm/@mikro-orm+core@6.5.7/node_modules/@mikro-orm/core/platforms/ExceptionConverter.js:8:16)
+    at MongoExceptionConverter.convertException (/home/fallow/base-stack/node_modules/.pnpm/@mikro-orm+mongodb@6.5.7_@mikro-orm+core@6.5.7/node_modules/@mikro-orm/mongodb/MongoExceptionConverter.js:17:22)
+    at MongoDriver.convertException (/home/fallow/base-stack/node_modules/.pnpm/@mikro-orm+core@6.5.7/node_modules/@mikro-orm/core/drivers/DatabaseDriver.js:351:54)
+    at /home/fallow/base-stack/node_modules/.pnpm/@mikro-orm+core@6.5.7/node_modules/@mikro-orm/core/drivers/DatabaseDriver.js:355:24
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at MongoDriver.findOne (/home/fallow/base-stack/node_modules/.pnpm/@mikro-orm+mongodb@6.5.7_@mikro-orm+core@6.5.7/node_modules/@mikro-orm/mongodb/MongoDriver.js:64:21)
+    at MongoEntityManager.findOne (/home/fallow/base-stack/node_modules/.pnpm/@mikro-orm+core@6.5.7/node_modules/@mikro-orm/core/EntityManager.js:571:22)
+    at Object.findOne (file:///home/fallow/base-stack/node_modules/.pnpm/better-auth-mikro-orm@0.4.3_@mikro-orm+core@6.5.7_better-auth@1.3.27_react-dom@19.1.1_react@19.1.1__react@19.1.1_/node_modules/better-auth-mikro-orm/lib/adapter.js:214:24)
+    at Object.findOne (file:///home/fallow/base-stack/node_modules/.pnpm/better-auth@1.3.27_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/better-auth/dist/shared/better-auth.BvvYEWCP.mjs:585:19)
+    at Object.findUserByEmail (file:///home/fallow/base-stack/node_modules/.pnpm/better-auth@1.3.27_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/better-auth/dist/shared/better-auth.D-L3RQ6y.mjs:718:20)
+    at file:///home/fallow/base-stack/node_modules/.pnpm/better-auth@1.3.27_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/better-auth/dist/shared/better-auth.C3-_8m-g.mjs:4371:18
+    at internalHandler (file:///home/fallow/base-stack/node_modules/.pnpm/better-call@1.0.19/node_modules/better-call/src/endpoint.ts:340:20)
+    at Object.api.<computed> [as signInEmail] (file:///home/fallow/base-stack/node_modules/.pnpm/better-auth@1.3.27_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/better-auth/dist/shared/better-auth.C3-_8m-g.mjs:6688:22)
+    at /home/fallow/base-stack/app/routes/_auth.login/route.tsx:31:20
+    at file:///home/fallow/base-stack/node_modules/.pnpm/react-router-devtools@5.1.3_@types+react-dom@19.1.9_@types+react@19.1.13__@types+react@_44485fd1e5eb90109b2f05dd973c56cb/node_modules/react-router-devtools/dist/context.js:126:15
+    at file:///home/fallow/base-stack/node_modules/.pnpm/react-router-devtools@5.1.3_@types+react-dom@19.1.9_@types+react@19.1.13__@types+react@_44485fd1e5eb90109b2f05dd973c56cb/node_modules/react-router-devtools/dist/server.js:340:17
+    at callRouteHandler (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-SKNKB5VI.mjs:510:16)
+    at file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:4259:19
+    at callLoaderOrAction (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:4311:16)
+    at async Promise.all (index 0)
+    at defaultDataStrategy (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:3965:17)
+    at callDataStrategyImpl (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:4207:17)
+    at callDataStrategy (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:3298:19)
+    at submit (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:3105:21)
+    at queryImpl (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:3040:23)
+    at file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:2830:31
+    at staticHandler.query.generateMiddlewareResponse (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-SKNKB5VI.mjs:778:29)
+    at file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:2828:23
+    at callRouteMiddleware (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:4045:18)
+    at runMiddlewarePipeline (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:4028:16)
+    at Object.query (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:2818:24)
+    at singleFetchAction (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-SKNKB5VI.mjs:772:18)
+    at handleSingleFetchRequest (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-SKNKB5VI.mjs:1270:45)
+    at requestHandler (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-SKNKB5VI.mjs:1156:18)
+    at dispatch (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/compose.js:22:17)
+    at file:///home/fallow/base-stack/node_modules/.pnpm/remix-hono@0.0.18_hono@4.9.7_i18next@25.5.2_typescript@5.9.2__pretty-cache-header@1.0.0_2b11942e1bfc03678040760aa94d8350/node_modules/remix-hono/src/i18next.ts:28:3
+    at dispatch (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/compose.js:22:17)
+    at /home/fallow/base-stack/app/server/middlewares/hono/withAuth.ts:9:3
+    at dispatch (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/compose.js:22:17)
+    at dispatch (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/compose.js:22:17)
+    at csrf2 (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/middleware/csrf/index.js:50:5)
+    at dispatch (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/compose.js:22:17)
+    at /home/fallow/base-stack/app/server/middlewares/hono/withResponseHeaders.ts:11:4
+    at dispatch (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/compose.js:22:17)
+    ... collapsed 3 duplicate lines matching above 1 lines 3 times...
+    at file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/hono-base.js:201:25
+    at getRequestListener.overrideGlobalObjects (file:///home/fallow/base-stack/node_modules/.pnpm/@hono+vite-dev-server@0.20.1_hono@4.9.7/node_modules/@hono/vite-dev-server/dist/dev-server.js:111:32)
+    at responseViaResponseObject (file:///home/fallow/base-stack/node_modules/.pnpm/@hono+node-server@1.19.5_hono@4.9.7/node_modules/@hono/node-server/dist/index.mjs:403:15)
+
+    at MongoConnection.getConnectionOptions (/home/fallow/base-stack/node_modules/.pnpm/@mikro-orm+mongodb@6.5.7_@mikro-orm+core@6.5.7/node_modules/@mikro-orm/mongodb/MongoConnection.js:84:19)
+    at MongoConnection.connect (/home/fallow/base-stack/node_modules/.pnpm/@mikro-orm+mongodb@6.5.7_@mikro-orm+core@6.5.7/node_modules/@mikro-orm/mongodb/MongoConnection.js:29:86)
+    at MongoConnection.ensureConnection (/home/fallow/base-stack/node_modules/.pnpm/@mikro-orm+core@6.5.7/node_modules/@mikro-orm/core/connections/Connection.js:43:24)
+    at MongoConnection.find (/home/fallow/base-stack/node_modules/.pnpm/@mikro-orm+mongodb@6.5.7_@mikro-orm+core@6.5.7/node_modules/@mikro-orm/mongodb/MongoConnection.js:114:20)
+    at MongoDriver.findOne (/home/fallow/base-stack/node_modules/.pnpm/@mikro-orm+mongodb@6.5.7_@mikro-orm+core@6.5.7/node_modules/@mikro-orm/mongodb/MongoDriver.js:64:67)
+    at MongoEntityManager.findOne (/home/fallow/base-stack/node_modules/.pnpm/@mikro-orm+core@6.5.7/node_modules/@mikro-orm/core/EntityManager.js:571:38)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.findOne (file:///home/fallow/base-stack/node_modules/.pnpm/better-auth-mikro-orm@0.4.3_@mikro-orm+core@6.5.7_better-auth@1.3.27_react-dom@19.1.1_react@19.1.1__react@19.1.1_/node_modules/better-auth-mikro-orm/lib/adapter.js:214:24)
+    at Object.findOne (file:///home/fallow/base-stack/node_modules/.pnpm/better-auth@1.3.27_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/better-auth/dist/shared/better-auth.BvvYEWCP.mjs:585:19)
+    at Object.findUserByEmail (file:///home/fallow/base-stack/node_modules/.pnpm/better-auth@1.3.27_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/better-auth/dist/shared/better-auth.D-L3RQ6y.mjs:718:20)
+    at file:///home/fallow/base-stack/node_modules/.pnpm/better-auth@1.3.27_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/better-auth/dist/shared/better-auth.C3-_8m-g.mjs:4371:18
+    at internalHandler (file:///home/fallow/base-stack/node_modules/.pnpm/better-call@1.0.19/node_modules/better-call/src/endpoint.ts:340:20)
+    at Object.api.<computed> [as signInEmail] (file:///home/fallow/base-stack/node_modules/.pnpm/better-auth@1.3.27_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/better-auth/dist/shared/better-auth.C3-_8m-g.mjs:6688:22)
+    at /home/fallow/base-stack/app/routes/_auth.login/route.tsx:31:20
+    at file:///home/fallow/base-stack/node_modules/.pnpm/react-router-devtools@5.1.3_@types+react-dom@19.1.9_@types+react@19.1.13__@types+react@_44485fd1e5eb90109b2f05dd973c56cb/node_modules/react-router-devtools/dist/context.js:126:15
+    at file:///home/fallow/base-stack/node_modules/.pnpm/react-router-devtools@5.1.3_@types+react-dom@19.1.9_@types+react@19.1.13__@types+react@_44485fd1e5eb90109b2f05dd973c56cb/node_modules/react-router-devtools/dist/server.js:340:17
+    at callRouteHandler (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-SKNKB5VI.mjs:510:16)
+    at file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:4259:19
+    at callLoaderOrAction (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:4311:16)
+    at async Promise.all (index 0)
+    at defaultDataStrategy (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:3965:17)
+    at callDataStrategyImpl (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:4207:17)
+    at callDataStrategy (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:3298:19)
+    at submit (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:3105:21)
+    at queryImpl (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:3040:23)
+    at file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:2830:31
+    at staticHandler.query.generateMiddlewareResponse (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-SKNKB5VI.mjs:778:29)
+    at file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:2828:23
+    at callRouteMiddleware (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:4045:18)
+    at runMiddlewarePipeline (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:4028:16)
+    at Object.query (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-B7RQU5TL.mjs:2818:24)
+    at singleFetchAction (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-SKNKB5VI.mjs:772:18)
+    at handleSingleFetchRequest (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-SKNKB5VI.mjs:1270:45)
+    at requestHandler (file:///home/fallow/base-stack/node_modules/.pnpm/react-router@7.9.1_react-dom@19.1.1_react@19.1.1__react@19.1.1/node_modules/react-router/dist/development/chunk-SKNKB5VI.mjs:1156:18)
+    at dispatch (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/compose.js:22:17)
+    at file:///home/fallow/base-stack/node_modules/.pnpm/remix-hono@0.0.18_hono@4.9.7_i18next@25.5.2_typescript@5.9.2__pretty-cache-header@1.0.0_2b11942e1bfc03678040760aa94d8350/node_modules/remix-hono/src/i18next.ts:28:3
+    at dispatch (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/compose.js:22:17)
+    at /home/fallow/base-stack/app/server/middlewares/hono/withAuth.ts:9:3
+    at dispatch (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/compose.js:22:17)
+    at dispatch (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/compose.js:22:17)
+    at csrf2 (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/middleware/csrf/index.js:50:5)
+    at dispatch (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/compose.js:22:17)
+    at /home/fallow/base-stack/app/server/middlewares/hono/withResponseHeaders.ts:11:4
+    at dispatch (file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/compose.js:22:17)
+    ... collapsed 3 duplicate lines matching above 1 lines 3 times...
+    at file:///home/fallow/base-stack/node_modules/.pnpm/hono@4.9.7/node_modules/hono/dist/hono-base.js:201:25
+    at getRequestListener.overrideGlobalObjects (file:///home/fallow/base-stack/node_modules/.pnpm/@hono+vite-dev-server@0.20.1_hono@4.9.7/node_modules/@hono/vite-dev-server/dist/dev-server.js:111:32)
+    at responseViaResponseObject (file:///home/fallow/base-stack/node_modules/.pnpm/@hono+node-server@1.19.5_hono@4.9.7/node_modules/@hono/node-server/dist/index.mjs:403:15) {
+  code: undefined,
+  errno: undefined,
+  sqlState: undefined,
+  sqlMessage: undefined,
+  errmsg: undefined,
+  entity: undefined
+}
+
+
+##### idetify error  and type errors connect, manifest
+
+fix Type 'SimplifiedRouteMatch | undefined' is not assignable to type 'SimplifiedRouteMatch'.
+Type 'undefined' is not assignable to type 'SimplifiedRouteMatch'., Argument of type 'SimplifiedRouteMatch[]' is not assignable to parameter of type '{ params: Params<string>; pathname: string; pathnameBase: string; route: AgnosticRouteObject; pattern: string; }[]'.
+Property 'route' is missing in type 'SimplifiedRouteMatch' but required in type '{ params: Params<string>; pathname: string; pathnameBase: string; route: AgnosticRouteObject; pattern: string; }'.
+
+
+_auth.login\route.tsx
+
+```ts
+throw replace("/home", {
+```
+
+server\context.ts
+
+```ts
+export const globalAppContext = createContext<AppContext>()
+
+import { authContext } from "./contexts/auth"
+export const getLoadContext = async (c: Context, options: OptionsWithBuild) => {
+	const context = new RouterContextProvider()
+
+	// Gather all context data here
+	const lang = i18next.getLocale(c)
+	const t = await i18next.getFixedT(c)
+	const env = getServerEnv()
+	const matches = getRouteMatches(options.build.routes, c.req.url, options.build.basename)
+
+	// Set all needed contexts into the single provider
+	context.set(authContext, c.var.auth)
+	context.set(ormContext, c.var.orm)
+	context.set(resHeadersContext, c.var.resHeaders)
+	context.set(matchesContext, matches ?? [])
+	context.set(globalAppContext, {
+		lang,
+		t,
+		env,
+		clientEnv: getClientEnv(),
+			isProduction: env.APP_ENV === "production",
+		body: (c as any).body,
+	})
+		return context
+}
+
+declare module "react-router" {
+	interface AppLoadContext extends ReturnType<typeof getServerEnv> {}
+}
+```
+
+lib\Config.ts
+
+- remove orm for mariaDb , since mongodb no need (not the problem)
+
+base.ts
+
+```ts
+// driverOptions: { connection: { timezone: "+02:00" } },
+	clientUrl: "mongodb://localhost:27017/test",
+```
+
+routes.ts
+
+```ts
+interface SimplifiedRouteMatch {
+	params: Record<string, string>
+	pathname: string
+	pathnameBase: string
+	routeId?: string // Use a simple identifier instead of full route object
+	pattern: string
+}
+export function getRouteMatches(
+	manifest: ServerRouteManifest,
+	url: string | URL,
+	basename = "/"
+): RouteMatchWithPattern[] | undefined {...}
+
+export function getCurrentRoteFromMatches(
+	matches: RouteMatchWithPattern[],
+	url: string | URL
+): SimplifiedRouteMatch | undefined {
+	const { pathname: current } = new URL(url)
+
+	return matches.find(({ pathname }) => pathname === current)
+	const found = matches.find(({ pathname }) => pathname === current)
+	if (!found) return undefined
+
+	return {
+		// react-router's Params type may not be a plain Record<string, string>,
+		// cast to the simplified shape expected by callers.
+		params: found.params as unknown as Record<string, string>,
+		pathname: found.pathname,
+		pathnameBase: found.pathnameBase,
+		pattern: found.pattern,
+		routeId: found.route?.id,
+	}
+}
+
+export function getCurrentRouteMeta(
+	routes: ServerBuild["routes"],
+	url: string | URL
+): SimplifiedRouteMatch | undefined {}
+```
+
+config.ts
+- remove orm config
+
+withResponseHeaders.ts
+
+- logs in middleware prove error
+
+#### dev in wsl is difficult
+
+Edit your Windows MongoDB config file (e.g., mongod.cfg) and set:
+
+text
+net:
+  bindIp:  0.0.0.0 //  bindIp: 127.0.0.1,172.22.0.1
+  #127.0.0.1
+
+fallow@Fallow:~/base-stack$ ip addr show eth0 | grep 'inet ' | awk '{print $2}' | cut -d/ -f1
+//172.22.237.128
+172.22.224.1  <<--- this one
+Modify your connection string inside WSL apps to:
+
+text
+mongodb://<windows_host_ip>:27017
+mongodb://172.22.224.1 :27017

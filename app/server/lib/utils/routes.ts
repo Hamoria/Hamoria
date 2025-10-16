@@ -42,8 +42,18 @@ export function createRoutes(
 		children: createRoutes(manifest, route.id, routesByParentId),
 	}))
 }
-
-export function getRouteMatches(manifest: ServerRouteManifest, url: string | URL, basename = "/") {
+export interface SimplifiedRouteMatch {
+	params: Record<string, string>
+	pathname: string
+	pathnameBase: string
+	routeId?: string // Use a simple identifier instead of full route object
+	pattern: string
+}
+export function getRouteMatches(
+	manifest: ServerRouteManifest,
+	url: string | URL,
+	basename = "/"
+): RouteMatchWithPattern[] | undefined {
 	const { pathname: current } = new URL(url)
 
 	const matches = matchRoutes(createRoutes(manifest), current, basename)
@@ -69,17 +79,46 @@ export function getRouteMatches(manifest: ServerRouteManifest, url: string | URL
 
 		return match
 	})
-
+	// return res.map(({ params, pathname, pathnameBase, pattern, route }) => ({
+	// 	params,
+	// 	pathname,
+	// 	pathnameBase,
+	// 	pattern,
+	// 	routeId: route.id,
+	// }))
 	return res
 }
 
-export function getCurrentRoteFromMatches(matches: RouteMatchWithPattern[], url: string | URL) {
+// export function getCurrentRoteFromMatches(matches: RouteMatchWithPattern[], url: string | URL): SimplifiedRouteMatch {
+// 	const { pathname: current } = new URL(url)
+
+// 	return matches.find(({ pathname }) => pathname === current)
+// }
+
+export function getCurrentRoteFromMatches(
+	matches: RouteMatchWithPattern[],
+	url: string | URL
+): SimplifiedRouteMatch | undefined {
 	const { pathname: current } = new URL(url)
 
-	return matches.find(({ pathname }) => pathname === current)
+	const found = matches.find(({ pathname }) => pathname === current)
+	if (!found) return undefined
+
+	return {
+		// react-router's Params type may not be a plain Record<string, string>,
+		// cast to the simplified shape expected by callers.
+		params: found.params as unknown as Record<string, string>,
+		pathname: found.pathname,
+		pathnameBase: found.pathnameBase,
+		pattern: found.pattern,
+		routeId: found.route?.id,
+	}
 }
 
-export function getCurrentRouteMeta(routes: ServerBuild["routes"], url: string | URL) {
+export function getCurrentRouteMeta(
+	routes: ServerBuild["routes"],
+	url: string | URL
+): SimplifiedRouteMatch | undefined {
 	const matches = getRouteMatches(routes, url)
 
 	return matches ? getCurrentRoteFromMatches(matches, url) : undefined

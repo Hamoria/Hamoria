@@ -33,7 +33,7 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
 			body: submission.value,
 		})
 
-		throw replace("/admin", {
+		throw replace("/home", {
 			headers: response.headers,
 		})
 	} catch (error) {
