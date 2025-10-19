@@ -12,12 +12,13 @@ import { MongoDriver } from "@mikro-orm/mongodb"
 // const { orm } = appConfig
 
 import { TsMorphMetadataProvider } from "@mikro-orm/reflection"
+import config from "../../config"
 
 // import { Config } from "../../zod/Confg"
 
 // const base = join(process.cwd(), "app", "server", "db")
 
-const config = defineConfig({
+const configg = defineConfig({
 	// ...orm,
 	metadataProvider: TsMorphMetadataProvider,
 	// ensureDatabase: true,
@@ -25,11 +26,11 @@ const config = defineConfig({
 	// driverOptions: { connection: { timezone: "+02:00" } },
 	dbName: "Hamoria",
 	entities: Object.values(entities),
-	clientUrl: "mongodb://localhost:27017/test",
+	clientUrl: config.server.db, //+--"mongodb://localhost:27017/test",
 	//"mongodb://172.22.224.1:27017/test",
 	//process.env.MONGO_URL_LOCAL || process.env.MONGO_URL ||
 	// subscribers: Object.values(subscribers).map((Subscriber) => new Subscriber()),
-	debug: true,
+	// debug: true,
 	// extensions: [Migrator],
 	// migrations: {
 	// 	path: join(base, "migrations"),
@@ -41,7 +42,7 @@ const config = defineConfig({
 	},
 })
 
-export default config
+export default configg
 
 // class ConnectionManager {
 // 	private async handleConnectionError(error: Error) {

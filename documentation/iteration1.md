@@ -12,6 +12,9 @@ https://github.com/Hamoria/Hamoria/blob/main/documentation/iteration1.md
 ### core layout (active view)
 
 - current
+1. non customized session storage.
+- simply check has in storage (test see record in store)
+- 2 modules map same page
 
 https://github.com/coji/shadcn-admin-react-router/tree/main/app
 
@@ -19,6 +22,8 @@ https://github.com/coji/shadcn-admin-react-router/tree/main/app
   [tuto v2] https://sergiodxa.com/tutorials/add-additional-data-before-submitting-on-remix
 
 #### base create record
+
+- create the record with type and value
 
 use process.env
 

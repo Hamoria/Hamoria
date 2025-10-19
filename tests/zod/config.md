@@ -1,23 +1,13 @@
 import { describe, expect, it } from "vitest" // or jest
-import { Config } from "../zod/Confg"
+import { Config } from "~/server/lib/zod/Confg"
 
 describe("Config schema", () => {
 	it("successfully validates valid config", () => {
 		const validInput = {
-			app: {
-				// provide valid properties expected by App schema
-			},
-			server: {
-				// valid properties for Server
-			},
-			orm: {
-				// valid properties for Orm
-			},
-			auth: {
-				// valid properties for Auth
-			},
+			app: { name: "Hamoria" },
+			auth: { secret: "secret", cookiePrefix: undefined },
+			server: { port: "3000", db: "mongodb://localhost:27017/db" },
 		}
-
 		const parseResult = Config.safeParse(validInput)
 		expect(parseResult.success).toBe(true)
 		if (parseResult.success) {
@@ -29,10 +19,9 @@ describe("Config schema", () => {
 
 	it("fails to validate invalid config", () => {
 		const invalidInput = {
-			app: {}, // missing required properties
-			server: null,
-			orm: {},
-			auth: {},
+			app: {},
+			// 	auth: { secret: "secret", cookiePrefix: undefined },
+			// 	server: { port: "3000", db: "mongodb://localhost:27017/db" },
 		}
 
 		const parseResult = Config.safeParse(invalidInput)

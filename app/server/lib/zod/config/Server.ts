@@ -1,10 +1,11 @@
 import { z } from "zod/v4"
-
-import { ServerPort } from "./server/ServerPort.js"
+import { db_url } from "./server/DB_URL"
+import { ServerPort } from "./server/ServerPort"
 
 export const Server = z
 	.object({
 		port: ServerPort,
+		db: db_url,
 	})
 	.transform((value) => Object.freeze(value))
 

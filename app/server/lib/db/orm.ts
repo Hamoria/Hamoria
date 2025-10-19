@@ -20,7 +20,7 @@ export function getOrm(): Promise<MikroORM> {
 		cache = createOrm()
 	}
 
-	return cache!
+	return cache
 }
 
 export type WithOrmCallback<TResult, TArgs extends unknown[]> = (

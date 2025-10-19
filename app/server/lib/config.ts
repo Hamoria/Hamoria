@@ -45,7 +45,7 @@ export const envSchema = z.object({
 	BLOG_NAME: z.string().nonempty(),
 })
 type ServerEnv = z.infer<typeof envSchema>
-let env: ServerEnv
+var env: ServerEnv
 
 // biome-ignore lint/style/noProcessEnv: This should be the only place to use process.env directly
 const envData = envSchema.safeParse(process.env)
@@ -69,6 +69,7 @@ const config = Config.parse({
 	},
 	server: {
 		port: env.PORT || undefined,
+		db: env.MONGO_URL,
 	},
 	// orm: {
 	// 	// debug: process.env.NODE_ENV,

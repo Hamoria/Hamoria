@@ -1268,3 +1268,98 @@ Modify your connection string inside WSL apps to:
 text
 mongodb://<windows_host_ip>:27017
 mongodb://172.22.224.1 :27017
+
+
+#### remote url is most simple, passable tests
+
+.vdcode/css-data.json
+
+```json
+{
+	"version": 1.1,
+	"atDirectives": [
+		{
+			"name": "@tailwind",
+			"description": "Tailwind CSS directive"
+		},
+		{
+			"name": "@apply",
+			"description": "Tailwind CSS directive"
+		},
+		{
+			"name": "@custom-variant",
+			"description": "Tailwind CSS directive for custom variants"
+		},
+		{
+			"name": "@theme",
+			"description": "Tailwind CSS directive for custom variants"
+		},
+		{
+			"name": "@utility",
+			"description": "Tailwind CSS directive for custom variants"
+		}
+	]
+}
+```
+
+settings.json
+
+```json
+"css.customData": ["./.vscode/css-data.json"],
+	"css.lint.unknownAtRules": "ignore"
+```
+
+lib\config.ts
+
+```ts
+var env: ServerEnv
+
+server: {
+		port: env.PORT || undefined,
+		db: env.MONGO_URL,
+	},
+```
+
+db\orm.ts
+
+- return a let > const imply
+Forbidden non-null assertion.biomelint/style/noNonNullAssertion
+
+zod\config\Server.ts
+
+```ts
+import { db_url } from "./server/DB_URL"
+import { ServerPort } from "./server/ServerPort"
+
+export const Server = z
+	.object({
+		port: ServerPort,
+		db: db_url,
+	})
+	.transform((value) => Object.freeze(value))
+```
+
+
+server\DB_URL.ts
+
+```ts
+
+@@ -0,0 +1,9 @@
+import { z } from "zod/v4"
+
+// import { Port } from "../../common/Port"
+
+export const db_url = z.string().trim().min(1).optional().default("mongodb://172.22.224.1 :27017")
+
+export type IName = z.input<typeof db_url>
+
+export type OName = z.output<typeof db_url>
+```
+
+biome.json
+
+```json
+"suspicious": {
+
+				"noUnknownAtRules": "off",
+```
