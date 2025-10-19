@@ -5,6 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  zod: 4.1.12
   react-router-hono-server@2>hono: 4.9.7
 
 importers:
@@ -25,7 +26,7 @@ importers:
         version: 1.12.0(react@19.1.1)
       '@conform-to/zod':
         specifier: 1.12.0
-        version: 1.12.0(zod@3.25.76)
+        version: 1.12.0(zod@4.1.12)
       '@edgefirst-dev/api-client':
         specifier: 0.3.0
         version: 0.3.0
@@ -160,7 +161,7 @@ importers:
         version: 0.2.2
       remix-hono:
         specifier: 0.0.18
-        version: 0.0.18(hono@4.9.7)(i18next@25.5.2(typescript@5.9.2))(pretty-cache-header@1.0.0)(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(remix-i18next@7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))(zod@3.25.76)
+        version: 0.0.18(hono@4.9.7)(i18next@25.5.2(typescript@5.9.2))(pretty-cache-header@1.0.0)(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(remix-i18next@7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))(zod@4.1.12)
       remix-i18next:
         specifier: 7.3.0
         version: 7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
@@ -174,8 +175,8 @@ importers:
         specifier: 3.3.1
         version: 3.3.1
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.1.12
+        version: 4.1.12
     devDependencies:
       '@babel/plugin-proposal-decorators':
         specifier: 7.28.0
@@ -192,6 +193,9 @@ importers:
       '@mikro-orm/cli':
         specifier: 6.5.7
         version: 6.5.7
+      '@playwright/test':
+        specifier: 1.56.1
+        version: 1.56.1
       '@react-router/dev':
         specifier: 7.9.1
         version: 7.9.1(@types/node@24.5.1)(babel-plugin-macros@3.1.0)(jiti@2.6.1)(lightningcss@1.30.2)(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(tsx@4.20.5)(typescript@5.9.2)(vite@7.1.5(@types/node@24.5.1)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.5))
@@ -583,7 +587,7 @@ packages:
   '@conform-to/zod@1.12.0':
     resolution: {integrity: sha512-+teD2CFI0a3qvyi0SlL5l7YKkau2cb5PzBV2W/bh9xZqlM8jnaMIc03bWJegvbvL4yzkeUvNZwncw9hYcm6a6w==}
     peerDependencies:
-      zod: ^3.21.0 || ^4.0.0
+      zod: 4.1.12
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -1281,6 +1285,11 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
+
+  '@playwright/test@1.56.1':
+    resolution: {integrity: sha512-vSMYtL/zOcFpvJCW71Q/OEGQb7KYBPAdKh35WNSkaZA75JlAO8ED8UN6GUNTm3drWomcbcqRPFqQbLae8yBTdg==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
@@ -3771,8 +3780,18 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  playwright-core@1.56.1:
+    resolution: {integrity: sha512-hutraynyn31F+Bifme+Ps9Vq59hKuUCz7H1kDOcBs+2oGguKkWTU50bBWrtz34OUWmIwpBTWDxaRPXrIXkgvmQ==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   playwright@1.55.0:
     resolution: {integrity: sha512-sdCWStblvV1YU909Xqx0DhOjPZE4/5lJsIS84IfN9dAZfcl/CIZ5O8l3o0j7hPMjDvqoTF8ZUcc+i/GL5erstA==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+  playwright@1.56.1:
+    resolution: {integrity: sha512-aFi5B0WovBHTEvpM3DzXTUaeN6eN0qWnTkKx4NQaH4Wvcmc153PdaY2UBdSYKaGYw+UyWXSVyxDUg5DoPEttjw==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -4025,7 +4044,7 @@ packages:
       pretty-cache-header: ^1.0.0
       react-router: ^7.0.1
       remix-i18next: ^7.0.0
-      zod: ^3.0.0
+      zod: 4.1.12
     peerDependenciesMeta:
       '@react-router/cloudflare':
         optional: true
@@ -4723,10 +4742,7 @@ packages:
     resolution: {integrity: sha512-OT5Y8lbUadqVZCsnyFaTQ4/O2mys4tj7PqhdbBCp7McPwvIEKfPtdA6QfPeFQK2/Rz5LgwmAXRJTugBNBi0btw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      zod: ^3.25.0 || ^4.0.0
-
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+      zod: 4.1.12
 
   zod@4.1.12:
     resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
@@ -5053,10 +5069,10 @@ snapshots:
       '@conform-to/dom': 1.12.0
       react: 19.1.1
 
-  '@conform-to/zod@1.12.0(zod@3.25.76)':
+  '@conform-to/zod@1.12.0(zod@4.1.12)':
     dependencies:
       '@conform-to/dom': 1.12.0
-      zod: 3.25.76
+      zod: 4.1.12
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -5783,6 +5799,10 @@ snapshots:
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
+
+  '@playwright/test@1.56.1':
+    dependencies:
+      playwright: 1.56.1
 
   '@polka/url@1.0.0-next.29': {}
 
@@ -7660,8 +7680,8 @@ snapshots:
       smol-toml: 1.4.2
       strip-json-comments: 5.0.2
       typescript: 5.9.2
-      zod: 3.25.76
-      zod-validation-error: 3.5.3(zod@3.25.76)
+      zod: 4.1.12
+      zod-validation-error: 3.5.3(zod@4.1.12)
 
   kysely@0.28.8: {}
 
@@ -8092,9 +8112,17 @@ snapshots:
 
   playwright-core@1.55.0: {}
 
+  playwright-core@1.56.1: {}
+
   playwright@1.55.0:
     dependencies:
       playwright-core: 1.55.0
+    optionalDependencies:
+      fsevents: 2.3.2
+
+  playwright@1.56.1:
+    dependencies:
+      playwright-core: 1.56.1
     optionalDependencies:
       fsevents: 2.3.2
 
@@ -8347,7 +8375,7 @@ snapshots:
 
   reflect-metadata@0.2.2: {}
 
-  remix-hono@0.0.18(hono@4.9.7)(i18next@25.5.2(typescript@5.9.2))(pretty-cache-header@1.0.0)(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(remix-i18next@7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))(zod@3.25.76):
+  remix-hono@0.0.18(hono@4.9.7)(i18next@25.5.2(typescript@5.9.2))(pretty-cache-header@1.0.0)(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(remix-i18next@7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))(zod@4.1.12):
     dependencies:
       hono: 4.9.7
       pretty-cache-header: 1.0.0
@@ -8355,7 +8383,7 @@ snapshots:
       i18next: 25.5.2(typescript@5.9.2)
       react-router: 7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       remix-i18next: 7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
-      zod: 3.25.76
+      zod: 4.1.12
 
   remix-i18next@7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1):
     dependencies:
@@ -8974,10 +9002,8 @@ snapshots:
 
   yoctocolors@2.1.2: {}
 
-  zod-validation-error@3.5.3(zod@3.25.76):
+  zod-validation-error@3.5.3(zod@4.1.12):
     dependencies:
-      zod: 3.25.76
-
-  zod@3.25.76: {}
+      zod: 4.1.12
 
   zod@4.1.12: {}
