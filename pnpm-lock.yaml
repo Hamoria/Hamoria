@@ -26,7 +26,7 @@ importers:
         version: 1.12.0(react@19.1.1)
       '@conform-to/zod':
         specifier: 1.12.0
-        version: 1.12.0(zod@4.1.12)
+        version: 1.12.0(zod@3.25.76)
       '@edgefirst-dev/api-client':
         specifier: 0.3.0
         version: 0.3.0
@@ -161,7 +161,7 @@ importers:
         version: 0.2.2
       remix-hono:
         specifier: 0.0.18
-        version: 0.0.18(hono@4.9.7)(i18next@25.5.2(typescript@5.9.2))(pretty-cache-header@1.0.0)(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(remix-i18next@7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))(zod@4.1.12)
+        version: 0.0.18(hono@4.9.7)(i18next@25.5.2(typescript@5.9.2))(pretty-cache-header@1.0.0)(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(remix-i18next@7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))(zod@3.25.76)
       remix-i18next:
         specifier: 7.3.0
         version: 7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
@@ -175,8 +175,8 @@ importers:
         specifier: 3.3.1
         version: 3.3.1
       zod:
-        specifier: 4.1.12
-        version: 4.1.12
+        specifier: 3.25.76
+        version: 3.25.76
     devDependencies:
       '@babel/plugin-proposal-decorators':
         specifier: 7.28.0
@@ -4744,6 +4744,9 @@ packages:
     peerDependencies:
       zod: 4.1.12
 
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
   zod@4.1.12:
     resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
 
@@ -5069,10 +5072,10 @@ snapshots:
       '@conform-to/dom': 1.12.0
       react: 19.1.1
 
-  '@conform-to/zod@1.12.0(zod@4.1.12)':
+  '@conform-to/zod@1.12.0(zod@3.25.76)':
     dependencies:
       '@conform-to/dom': 1.12.0
-      zod: 4.1.12
+      zod: 3.25.76
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -8375,7 +8378,7 @@ snapshots:
 
   reflect-metadata@0.2.2: {}
 
-  remix-hono@0.0.18(hono@4.9.7)(i18next@25.5.2(typescript@5.9.2))(pretty-cache-header@1.0.0)(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(remix-i18next@7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))(zod@4.1.12):
+  remix-hono@0.0.18(hono@4.9.7)(i18next@25.5.2(typescript@5.9.2))(pretty-cache-header@1.0.0)(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(remix-i18next@7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1))(zod@3.25.76):
     dependencies:
       hono: 4.9.7
       pretty-cache-header: 1.0.0
@@ -8383,7 +8386,7 @@ snapshots:
       i18next: 25.5.2(typescript@5.9.2)
       react-router: 7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       remix-i18next: 7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
-      zod: 4.1.12
+      zod: 3.25.76
 
   remix-i18next@7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2))(react-router@7.9.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1):
     dependencies:
@@ -9005,5 +9008,7 @@ snapshots:
   zod-validation-error@3.5.3(zod@4.1.12):
     dependencies:
       zod: 4.1.12
+
+  zod@3.25.76: {}
 
   zod@4.1.12: {}
