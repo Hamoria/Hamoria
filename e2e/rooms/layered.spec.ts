@@ -17,4 +17,7 @@ import { chromium, devices } from "playwright"
 	// Teardown
 	await context.close()
 	await browser.close()
-})()
+})().catch(() => {
+	// console.error(err)
+	process.exit(1)
+})
