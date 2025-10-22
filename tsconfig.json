@@ -1,6 +1,16 @@
 {
-	"include": ["env.d.ts", "**/*.ts", "**/*.tsx", "**/**/.server/**/*.ts", ".react-router/types/**/*"],
+	"include": [
+		"@types/**/*.d.ts",
+		"**/*.config.ts",
+		"env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		"**/**/.server/**/*.ts",
+		".react-router/types/**/*",
+		"node_modules/vitest"
+	],
 	"compilerOptions": {
+		"typeRoots": ["./types", "./node_modules/@types", "./node_modules"],
 		"types": ["vitest/globals", "@vitest/browser/providers/playwright", "reflect-metadata"],
 		"lib": ["DOM", "DOM.Iterable", "ES2023"],
 		"isolatedModules": true,
@@ -20,6 +30,12 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"strictPropertyInitialization": false,
+		// "isolatedModules": true,
+		"verbatimModuleSyntax": true,
+		"allowImportingTsExtensions": true,
+		"allowSyntheticDefaultImports": true,
+
+		// "forceConsistentCasingInFileNames": true
 		"baseUrl": ".",
 		"paths": {
 			"~/*": ["./app/*"]
