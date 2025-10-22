@@ -1,6 +1,6 @@
+import fs from "node:fs"
+import path from "node:path"
 import { test as baseTest, expect } from "@playwright/test"
-import fs from "fs"
-import path from "path"
 
 export * from "@playwright/test"
 export const test = baseTest.extend<{}, { workerStorageState: string }>({
@@ -27,6 +27,13 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
 			// Alternatively, you can have a list of precreated accounts for testing.
 			// Make sure that accounts are unique, so that multiple team members
 			// can run tests at the same time without interference.
+			async function acquireAccount(id: number) {
+				// Return a dummy test account without real authentication
+				return {
+					username: `testuser${id}`,
+					password: `testpass${id}`,
+				}
+			}
 			const account = await acquireAccount(id)
 
 			// Perform authentication steps. Replace these actions with your own.
@@ -51,3 +58,15 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
 		{ scope: "worker" },
 	],
 })
+
+// import { test as base } from ‘@playwright/test’;
+
+// export const test = base.extend({
+// loginState: async ({ page }, use) => {
+// await page.goto(‘/login’);
+// await page.fill(‘#username’, ‘user’);
+// await page.fill(‘#password’, ‘pass’);
+// await page.click(‘button[type=”submit”]’);
+// await use(page);
+// },
+// });
