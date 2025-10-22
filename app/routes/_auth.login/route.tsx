@@ -8,7 +8,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	return null
 }
 
-import { parseWithZod } from "@conform-to/zod"
+import { parseWithZod } from "@conform-to/zod/v4"
 import { APIError } from "better-auth"
 import type { LoaderFunctionArgs } from "react-router" //ActionFunctionArgs
 import { data, replace } from "react-router"

@@ -88,3 +88,5 @@ blob-report
 /playwright/.auth/
 
 playwright/.auth
+
+/test-results
